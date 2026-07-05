@@ -1,42 +1,40 @@
 import asyncio
 import telnetlib3
 
+from engine.session import Session
+from engine.commands import handle_command
+
 
 WELCOME_TEXT = """
 =================================
            TelnetDM
-     AI Dungeon Master v0.1
 =================================
 
-You feel reality stabilize around you...
-
-Type anything to begin.
+Type:
+  look
+  go north/south
+  quit
 
 > """
 
 
 async def shell(reader, writer):
+    session = Session(writer)
+
     writer.write(WELCOME_TEXT)
 
     while True:
-        try:
-            cmd = await reader.read(1024)
+        cmd = await reader.read(1024)
 
-            if not cmd:
-                break
-
-            cmd = cmd.strip()
-
-            if cmd.lower() in ("quit", "exit"):
-                writer.write("\nFarewell, adventurer.\n")
-                break
-
-            response = f"\nYou said: {cmd}\n> "
-            writer.write(response)
-
-        except Exception as e:
-            writer.write(f"\nError: {e}\n")
+        if not cmd:
             break
+
+        result = handle_command(session, cmd)
+
+        if result == "quit":
+            break
+
+        writer.write("\n> ")
 
     writer.close()
 
@@ -48,7 +46,7 @@ async def main():
         shell=shell
     )
 
-    print("TelnetDM server running on port 8023")
+    print("TelnetDM running on port 8023")
     await server.wait_closed()
 
 
