@@ -28,7 +28,7 @@ async def shell(reader, writer):
 
         if not cmd:
             break
-                   cmd = cmd.strip()
+        cmd = cmd.strip()
                
         result = handle_command(session, cmd)
 
