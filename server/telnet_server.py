@@ -24,11 +24,12 @@ async def shell(reader, writer):
     writer.write(WELCOME_TEXT)
 
     while True:
-        cmd = await reader.read(1024)
+        cmd = await reader.readline()
 
         if not cmd:
             break
-
+                   cmd = cmd.strip()
+               
         result = handle_command(session, cmd)
 
         if result == "quit":
