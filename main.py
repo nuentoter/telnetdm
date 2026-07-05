@@ -1,5 +1,9 @@
+import asyncio
+from server.telnet_server import main as server_main
+
+
 def main():
-    print("TelnetDM starting...")
+    asyncio.run(server_main())
 
 
 if __name__ == "__main__":
