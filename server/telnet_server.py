@@ -18,32 +18,31 @@ WELCOME_TEXT = (
 )
 
 
-async def shell(reader, writer, telnet_protocol=None):
+async def shell(reader, writer):
     session = Session(writer)
 
-    # Force client-side echo ON (important for terminals like QtTerminal)
-    writer._set_echo(True)
-
+    # Display the welcome banner.
     writer.write(WELCOME_TEXT)
 
     while True:
-    cmd = await reader.readline()
+        cmd = await reader.readline()
 
-    if not cmd:
-        break
+        if not cmd:
+            break
 
-    cmd = cmd.strip()
+        cmd = cmd.strip()
 
-    # Echo what the player typed (THIS replaces telnet echo)
-    writer.write(cmd + "\r\n")
+        # Echo what the user typed so it appears in clients
+        # that don't perform local echo.
+        writer.write(cmd + "\r\n")
 
-    result = handle_command(session, cmd)
+        result = handle_command(session, cmd)
 
-    if result == "quit":
-        writer.write("\r\nFarewell, adventurer.\r\n")
-        break
+        if result == "quit":
+            writer.write("\r\nFarewell, adventurer.\r\n")
+            break
 
-    writer.write("\r\n> ")
+        writer.write("\r\n> ")
 
     writer.close()
 
@@ -52,7 +51,7 @@ async def main():
     server = await telnetlib3.create_server(
         host="0.0.0.0",
         port=8023,
-        shell=shell
+        shell=shell,
     )
 
     print("TelnetDM running on port 8023")
