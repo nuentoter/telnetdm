@@ -34,7 +34,6 @@ async def shell(reader, writer):
 
         # Echo what the user typed so it appears in clients
         # that don't perform local echo.
-        writer.write(cmd + "\r\n")
 
         result = handle_command(session, cmd)
 
@@ -52,6 +51,7 @@ async def main():
         host="0.0.0.0",
         port=8023,
         shell=shell,
+        line_mode=True,
     )
 
     print("TelnetDM running on port 8023")
