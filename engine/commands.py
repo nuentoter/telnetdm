@@ -1,5 +1,7 @@
 from engine.world import WORLD
 from engine.dice import d2, d4, d6, d8, d10, d12, d20, d100
+from engine.dice import d20
+from engine.skills import SKILLS
 
 
 def handle_command(session, cmd: str):
@@ -51,6 +53,43 @@ def handle_command(session, cmd: str):
             return
 
         session.send("Unknown die. Use d2, d4, d6, d8, d10, d12, d20, d100")
+        return
+
+    if cmd.startswith("check"):
+        parts = cmd.split()
+
+        if len(parts) < 2:
+            session.send("Usage: check <skill>")
+            return
+
+        skill = parts[1].lower()
+
+        if skill not in SKILLS:
+            session.send(f"Unknown skill: {skill}")
+            return
+
+        # roll d20
+        roll = d20()
+
+        # simple stat lookup (no modifiers yet)
+        stat_name = SKILLS[skill]
+        stat_value = getattr(session.player, stat_name)
+
+        # basic DC system
+        dc = 10
+
+        total = roll + (stat_value // 2 - 5)  # temporary modifier formula
+
+        session.send(f"\nSkill check: {skill}")
+        session.send(f"Roll: {roll}")
+        session.send(f"Stat: {stat_name} ({stat_value})")
+        session.send(f"Total: {total} vs DC {dc}")
+
+        if total >= dc:
+            session.send("Result: SUCCESS")
+        else:
+            session.send("Result: FAILURE")
+
         return
     
     if cmd in ("quit", "exit"):
