@@ -5,4 +5,4 @@ class Session:
         self.room = "start_room"
 
     def send(self, text: str):
-        self.writer.write(text + "\n")
+        self.writer.write(text + "\r\n")
