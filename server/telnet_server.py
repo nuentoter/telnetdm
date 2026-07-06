@@ -22,7 +22,7 @@ GAME=Game()
 
 async def shell(reader, writer):
     session = Session(writer)
-    Game.connect(session)
+    GAME.connect(session)
 
     # Display the welcome banner.
     writer.write(WELCOME_TEXT)
