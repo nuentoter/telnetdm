@@ -21,6 +21,9 @@ WELCOME_TEXT = (
 async def shell(reader, writer, telnet_protocol=None):
     session = Session(writer)
 
+    # Force client-side echo ON (important for terminals like QtTerminal)
+writer._set_echo(True)
+
     writer.write(WELCOME_TEXT)
 
     while True:
