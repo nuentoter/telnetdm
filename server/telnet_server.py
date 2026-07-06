@@ -26,7 +26,7 @@ async def shell(reader, writer, telnet_protocol=None):
 
     writer.write(WELCOME_TEXT)
 
-   while True:
+    while True:
     cmd = await reader.readline()
 
     if not cmd:
