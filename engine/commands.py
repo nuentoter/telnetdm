@@ -1,5 +1,5 @@
 from engine.world import WORLD
-from engine.dice import d20
+from engine.dice import d2, d4, d6, d8, d10, d12, d20, d100
 
 
 def handle_command(session, cmd: str):
@@ -24,7 +24,7 @@ def handle_command(session, cmd: str):
             session.send("You cannot go that way.")
         return
 
-    if cmd.startswith("roll"):
+        if cmd.startswith("roll"):
         parts = cmd.split()
 
         if len(parts) == 1:
@@ -32,8 +32,25 @@ def handle_command(session, cmd: str):
             session.send(f"You roll a d20: {result}")
             return
 
-        # future expansion: roll 2d6 etc.
-        session.send("Usage: roll or roll d20")
+        die = parts[1]
+
+        dice_map = {
+            "d2": d2,
+            "d4": d4,
+            "d6": d6,
+            "d8": d8,
+            "d10": d10,
+            "d12": d12,
+            "d20": d20,
+            "d100": d100,
+        }
+
+        if die in dice_map:
+            result = dice_map[die]()
+            session.send(f"You roll {die}: {result}")
+            return
+
+        session.send("Unknown die. Use d2, d4, d6, d8, d10, d12, d20, d100")
         return
     
     if cmd in ("quit", "exit"):
