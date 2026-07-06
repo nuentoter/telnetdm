@@ -26,22 +26,24 @@ async def shell(reader, writer, telnet_protocol=None):
 
     writer.write(WELCOME_TEXT)
 
-    while True:
-        cmd = await reader.readline()
+   while True:
+    cmd = await reader.readline()
 
-        if not cmd:
-            break
-        cmd = cmd.strip()
-        
-# Ec ho input (helps QtTerminal)
-        writer.write(cmd + "\r\n")
-        
-        result = handle_command(session, cmd)
+    if not cmd:
+        break
 
-        if result == "quit":
-            break
+    cmd = cmd.strip()
 
-        writer.write("\r\n> ")
+    # Echo what the player typed (THIS replaces telnet echo)
+    writer.write(cmd + "\r\n")
+
+    result = handle_command(session, cmd)
+
+    if result == "quit":
+        writer.write("\r\nFarewell, adventurer.\r\n")
+        break
+
+    writer.write("\r\n> ")
 
     writer.close()
 
