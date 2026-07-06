@@ -5,7 +5,7 @@ def handle_command(session, cmd: str):
     cmd = cmd.strip().lower()
 
     if cmd in ("look", "l"):
-        room = WORLD[session.room]
+        room = WORLD[session.player.room]
         session.send(f"\n{room['name']}")
         session.send(room["description"])
         session.send(f"Exits: {', '.join(room['exits'].keys())}")
@@ -17,7 +17,8 @@ def handle_command(session, cmd: str):
 
         if direction in room["exits"]:
             session.player.room = room["exits"][direction]
-            handle_command(session, "look")
+            # auto-look after moving
+            return handle_command(session, "look")
         else:
             session.send("You cannot go that way.")
         return
