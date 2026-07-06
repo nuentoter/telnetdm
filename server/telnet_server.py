@@ -22,7 +22,7 @@ async def shell(reader, writer, telnet_protocol=None):
     session = Session(writer)
 
     # Force client-side echo ON (important for terminals like QtTerminal)
-writer._set_echo(True)
+    writer._set_echo(True)
 
     writer.write(WELCOME_TEXT)
 
@@ -33,7 +33,7 @@ writer._set_echo(True)
             break
         cmd = cmd.strip()
         
-# Echo input (helps QtTerminal)
+# Ec ho input (helps QtTerminal)
         writer.write(cmd + "\r\n")
         
         result = handle_command(session, cmd)
