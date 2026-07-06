@@ -10,12 +10,43 @@ def handle_command(session, cmd: str):
     # LOOK COMMAND
     # -------------------------
     if cmd in ("look", "l"):
-        room = WORLD[session.player.room]
-        session.send(f"\n{room['name']}")
-        session.send(room["description"])
-        session.send(f"Exits: {', '.join(room['exits'].keys())}")
-        return
+    room = WORLD[session.player.room]
 
+    session.send(f"\n{room['name']}")
+    session.send(room["description"])
+    session.send(f"Exits: {', '.join(room['exits'].keys())}")
+
+    # Perception check to reveal hidden details
+    roll = d20()
+    modifier = session.player.wisdom // 2 - 5
+    total = roll + modifier
+
+    dc = 12
+
+    if "hidden" in room and "perception" in room["hidden"]:
+        if total >= dc:
+            session.send("\n[Perception Success]")
+            session.send(room["hidden"]["perception"])
+        else:
+            session.send("\n(You sense there may be more here...)")
+
+    return
+
+    # ------------------------
+    # SEARCH COMMAND
+    # ------------------------
+
+    if cmd == "search":
+    room = WORLD[session.player.room]
+
+    if "hidden" in room and "search" in room["hidden"]:
+        session.send(room["hidden"]["search"])
+    else:
+        session.send("You search the area but find nothing unusual.")
+
+    return
+
+    
     # -------------------------
     # MOVE COMMAND
     # -------------------------
