@@ -1,72 +1,59 @@
 from engine.world import WORLD
 from engine.dice import d20
 from engine.skills import SKILLS
-from engine.world import WORLD
 
 
 def handle_command(session, cmd: str):
     cmd = cmd.strip().lower()
 
-    # -------------------------
-    # LOOK COMMAND
-    # -------------------------
+    # -----------------------
+    # LOOK
+    # -----------------------
     if cmd in ("look", "l"):
-    room = WORLD[session.player.room]
+        room = WORLD[session.player.room]
 
-    session.send(f"\n{room['name']}")
-    session.send(room["description"])
-    session.send(f"Exits: {', '.join(room['exits'].keys())}")
+        session.send(f"\n{room['name']}")
+        session.send(room["description"])
+        session.send(f"Exits: {', '.join(room['exits'].keys())}")
 
-    # Perception check to reveal hidden details
-    roll = d20()
-    modifier = session.player.wisdom // 2 - 5
-    total = roll + modifier
+        # items
+        if "items" in room and room["items"]:
+            session.send("\nYou see:")
+            for item in room["items"]:
+                session.send(f" - {item}")
 
-    dc = 12
+        # hidden perception layer
+        roll = d20()
+        modifier = session.player.wisdom // 2 - 5
+        total = roll + modifier
 
-    if "hidden" in room and "perception" in room["hidden"]:
-        if total >= dc:
-            session.send("\n[Perception Success]")
-            session.send(room["hidden"]["perception"])
-        else:
-            session.send("\n(You sense there may be more here...)")
-            
-    if "items" in room and room["items"]:
-        session.send("\nYou see:")
-        for item in room["items"]:
-            session.send(f" - {item}")
-    
-    return
+        dc = 12
 
-    if cmd in ("inventory", "inv", "i"):
-    if not session.player.inventory:
-        session.send("Your inventory is empty.")
+        if "hidden" in room and "perception" in room["hidden"]:
+            if total >= dc:
+                session.send("\n[Perception Success]")
+                session.send(room["hidden"]["perception"])
+            else:
+                session.send("\n(You sense there may be more here...)")
+
         return
 
-    session.send("\nInventory:")
-    for item in session.player.inventory:
-        session.send(f" - {item}")
-
-    return
-
-    # ------------------------
-    # SEARCH COMMAND
-    # ------------------------
-
+    # -----------------------
+    # SEARCH
+    # -----------------------
     if cmd == "search":
-    room = WORLD[session.player.room]
+        room = WORLD[session.player.room]
 
-    if "hidden" in room and "search" in room["hidden"]:
-        session.send(room["hidden"]["search"])
-    else:
-        session.send("You search the area but find nothing unusual.")
+        if "hidden" in room and "search" in room["hidden"]:
+            session.send(room["hidden"]["search"])
+        else:
+            session.send("You search the area but find nothing unusual.")
 
-    return
+        return
 
-    
-    # -------------------------
-    # MOVE COMMAND
-    # -------------------------
+    # -----------------------
+    # MOVE
+    # -----------------------
     if cmd.startswith("go "):
         direction = cmd.split(" ", 1)[1]
         room = WORLD[session.player.room]
@@ -78,34 +65,46 @@ def handle_command(session, cmd: str):
             session.send("You cannot go that way.")
         return
 
-if cmd.startswith("take"):
-    parts = cmd.split()
+    # -----------------------
+    # TAKE ITEM
+    # -----------------------
+    if cmd.startswith("take"):
+        parts = cmd.split()
 
-    if len(parts) < 2:
-        session.send("Usage: take <item>")
+        if len(parts) < 2:
+            session.send("Usage: take <item>")
+            return
+
+        item_name = " ".join(parts[1:])
+        room = WORLD[session.player.room]
+
+        if "items" not in room or item_name not in room["items"]:
+            session.send("You don't see that here.")
+            return
+
+        room["items"].remove(item_name)
+        session.player.inventory.append(item_name)
+
+        session.send(f"You take the {item_name}.")
         return
 
-    item_name = " ".join(parts[1:])
+    # -----------------------
+    # INVENTORY
+    # -----------------------
+    if cmd in ("inventory", "inv", "i"):
+        if not session.player.inventory:
+            session.send("Your inventory is empty.")
+            return
 
-    room = WORLD[session.player.room]
+        session.send("\nInventory:")
+        for item in session.player.inventory:
+            session.send(f" - {item}")
 
-    if "items" not in room or item_name not in room["items"]:
-        session.send("You don't see that here.")
         return
 
-    # remove from world
-    room["items"].remove(item_name)
-
-    # add to player inventory
-    session.player.inventory.append(item_name)
-
-    session.send(f"You take the {item_name}.")
-    return
-
-    
-    # -------------------------
-    # ROLL COMMAND
-    # -------------------------
+    # -----------------------
+    # ROLL
+    # -----------------------
     if cmd.startswith("roll"):
         parts = cmd.split()
 
@@ -128,16 +127,15 @@ if cmd.startswith("take"):
         }
 
         if die in dice_map:
-            result = dice_map[die]()
-            session.send(f"You roll {die}: {result}")
+            session.send(f"You roll {die}: {dice_map[die]()}")
             return
 
         session.send("Unknown die. Use d2, d4, d6, d8, d10, d12, d20, d100")
         return
 
-    # -------------------------
-    # SKILL CHECK COMMAND
-    # -------------------------
+    # -----------------------
+    # SKILL CHECK
+    # -----------------------
     if cmd.startswith("check"):
         parts = cmd.split()
 
@@ -157,7 +155,6 @@ if cmd.startswith("take"):
         stat_value = getattr(session.player, stat_name)
 
         dc = 10
-
         modifier = stat_value // 2 - 5
         total = roll + modifier
 
@@ -173,9 +170,9 @@ if cmd.startswith("take"):
 
         return
 
-    # -------------------------
+    # -----------------------
     # QUIT
-    # -------------------------
+    # -----------------------
     if cmd in ("quit", "exit"):
         session.send("Farewell, adventurer.")
         return "quit"
