@@ -1,6 +1,7 @@
 from engine.world import WORLD
 from engine.dice import d20
 from engine.skills import SKILLS
+from engine.world import WORLD
 
 
 def handle_command(session, cmd: str):
@@ -29,6 +30,22 @@ def handle_command(session, cmd: str):
             session.send(room["hidden"]["perception"])
         else:
             session.send("\n(You sense there may be more here...)")
+            
+    if "items" in room and room["items"]:
+        session.send("\nYou see:")
+        for item in room["items"]:
+            session.send(f" - {item}")
+    
+    return
+
+    if cmd in ("inventory", "inv", "i"):
+    if not session.player.inventory:
+        session.send("Your inventory is empty.")
+        return
+
+    session.send("\nInventory:")
+    for item in session.player.inventory:
+        session.send(f" - {item}")
 
     return
 
@@ -61,6 +78,31 @@ def handle_command(session, cmd: str):
             session.send("You cannot go that way.")
         return
 
+if cmd.startswith("take"):
+    parts = cmd.split()
+
+    if len(parts) < 2:
+        session.send("Usage: take <item>")
+        return
+
+    item_name = " ".join(parts[1:])
+
+    room = WORLD[session.player.room]
+
+    if "items" not in room or item_name not in room["items"]:
+        session.send("You don't see that here.")
+        return
+
+    # remove from world
+    room["items"].remove(item_name)
+
+    # add to player inventory
+    session.player.inventory.append(item_name)
+
+    session.send(f"You take the {item_name}.")
+    return
+
+    
     # -------------------------
     # ROLL COMMAND
     # -------------------------
