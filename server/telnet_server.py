@@ -18,7 +18,7 @@ WELCOME_TEXT = (
 )
 
 
-async def shell(reader, writer):
+async def shell(reader, writer, telnet_protocol=None):
     session = Session(writer)
 
     writer.write(WELCOME_TEXT)
