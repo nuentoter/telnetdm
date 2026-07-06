@@ -8,6 +8,7 @@ WORLD = {
         "exits": {
             "north": "forest_edge"
         },
+        "items": ["rusted key"],
         "hidden": {
             "search": "You notice faint scratch marks on the stone floor.",
             "perception": "You spot disturbed dirt near the eastern wall."
@@ -23,6 +24,7 @@ WORLD = {
         "exits": {
             "south": "start_room"
         },
+        "items": [],
         "hidden": {
             "perception": "Something large recently moved through the underbrush."
         }
