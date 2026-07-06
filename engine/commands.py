@@ -1,5 +1,4 @@
 from engine.world import WORLD
-from engine.dice import d2, d4, d6, d8, d10, d12, d20, d100
 from engine.dice import d20
 from engine.skills import SKILLS
 
@@ -7,6 +6,9 @@ from engine.skills import SKILLS
 def handle_command(session, cmd: str):
     cmd = cmd.strip().lower()
 
+    # -------------------------
+    # LOOK COMMAND
+    # -------------------------
     if cmd in ("look", "l"):
         room = WORLD[session.player.room]
         session.send(f"\n{room['name']}")
@@ -14,19 +16,24 @@ def handle_command(session, cmd: str):
         session.send(f"Exits: {', '.join(room['exits'].keys())}")
         return
 
+    # -------------------------
+    # MOVE COMMAND
+    # -------------------------
     if cmd.startswith("go "):
         direction = cmd.split(" ", 1)[1]
         room = WORLD[session.player.room]
 
         if direction in room["exits"]:
             session.player.room = room["exits"][direction]
-            # auto-look after moving
             return handle_command(session, "look")
         else:
             session.send("You cannot go that way.")
         return
 
-        if cmd.startswith("roll"):
+    # -------------------------
+    # ROLL COMMAND
+    # -------------------------
+    if cmd.startswith("roll"):
         parts = cmd.split()
 
         if len(parts) == 1:
@@ -37,14 +44,14 @@ def handle_command(session, cmd: str):
         die = parts[1]
 
         dice_map = {
-            "d2": d2,
-            "d4": d4,
-            "d6": d6,
-            "d8": d8,
-            "d10": d10,
-            "d12": d12,
+            "d2": lambda: 1 if d20() <= 10 else 2,
+            "d4": lambda: __import__("random").randint(1, 4),
+            "d6": lambda: __import__("random").randint(1, 6),
+            "d8": lambda: __import__("random").randint(1, 8),
+            "d10": lambda: __import__("random").randint(1, 10),
+            "d12": lambda: __import__("random").randint(1, 12),
             "d20": d20,
-            "d100": d100,
+            "d100": lambda: __import__("random").randint(1, 100),
         }
 
         if die in dice_map:
@@ -55,6 +62,9 @@ def handle_command(session, cmd: str):
         session.send("Unknown die. Use d2, d4, d6, d8, d10, d12, d20, d100")
         return
 
+    # -------------------------
+    # SKILL CHECK COMMAND
+    # -------------------------
     if cmd.startswith("check"):
         parts = cmd.split()
 
@@ -62,23 +72,21 @@ def handle_command(session, cmd: str):
             session.send("Usage: check <skill>")
             return
 
-        skill = parts[1].lower()
+        skill = parts[1]
 
         if skill not in SKILLS:
             session.send(f"Unknown skill: {skill}")
             return
 
-        # roll d20
         roll = d20()
 
-        # simple stat lookup (no modifiers yet)
         stat_name = SKILLS[skill]
         stat_value = getattr(session.player, stat_name)
 
-        # basic DC system
         dc = 10
 
-        total = roll + (stat_value // 2 - 5)  # temporary modifier formula
+        modifier = stat_value // 2 - 5
+        total = roll + modifier
 
         session.send(f"\nSkill check: {skill}")
         session.send(f"Roll: {roll}")
@@ -91,7 +99,10 @@ def handle_command(session, cmd: str):
             session.send("Result: FAILURE")
 
         return
-    
+
+    # -------------------------
+    # QUIT
+    # -------------------------
     if cmd in ("quit", "exit"):
         session.send("Farewell, adventurer.")
         return "quit"
