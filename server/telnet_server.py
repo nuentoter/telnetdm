@@ -35,7 +35,7 @@ async def shell(reader, writer):
         if result == "quit":
             break
 
-        writer.write("\n> ")
+        writer.write("\r\n> ")
 
     writer.close()
 
