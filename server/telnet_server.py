@@ -4,18 +4,18 @@ import telnetlib3
 from engine.session import Session
 from engine.commands import handle_command
 
-
-WELCOME_TEXT = """
-=================================
-           TelnetDM
-=================================
-
-Type:
-  look
-  go north/south
-  quit
-
-> """
+WELCOME_TEXT = (
+    "=================================\r\n"
+    "           TelnetDM\r\n"
+    "=================================\r\n"
+    "\r\n"
+    "Type:\r\n"
+    "  look\r\n"
+    "  go north/south\r\n"
+    "  quit\r\n"
+    "\r\n"
+    "> "
+)
 
 
 async def shell(reader, writer):
