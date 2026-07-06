@@ -32,7 +32,10 @@ writer._set_echo(True)
         if not cmd:
             break
         cmd = cmd.strip()
-               
+        
+# Echo input (helps QtTerminal)
+        writer.write(cmd + "\r\n")
+        
         result = handle_command(session, cmd)
 
         if result == "quit":
