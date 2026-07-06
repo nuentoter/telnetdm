@@ -13,10 +13,10 @@ def handle_command(session, cmd: str):
 
     if cmd.startswith("go "):
         direction = cmd.split(" ", 1)[1]
-        room = WORLD[session.room]
+        room = WORLD[session.player.room]
 
         if direction in room["exits"]:
-            session.room = room["exits"][direction]
+            session.player.room = room["exits"][direction]
             handle_command(session, "look")
         else:
             session.send("You cannot go that way.")
