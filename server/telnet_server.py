@@ -1,3 +1,4 @@
+from engine.game import Game
 import asyncio
 import telnetlib3
 
@@ -17,9 +18,11 @@ WELCOME_TEXT = (
     "> "
 )
 
+GAME=Game()
 
 async def shell(reader, writer):
     session = Session(writer)
+    Game.connect(session)
 
     # Display the welcome banner.
     writer.write(WELCOME_TEXT)
@@ -35,14 +38,16 @@ async def shell(reader, writer):
         # Echo what the user typed so it appears in clients
         # that don't perform local echo.
 
-        result = handle_command(session, cmd)
+        result = GAME.process_command(session, cmd)
 
         if result == "quit":
             writer.write("\r\nFarewell, adventurer.\r\n")
             break
 
         writer.write("\r\n> ")
-
+    
+    GAME.disconnect(session)
+    
     writer.close()
 
 
