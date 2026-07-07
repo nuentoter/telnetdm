@@ -1,20 +1,18 @@
 class Player:
-    def __init__(self):
-        self.name = "Wanderer"
 
-        self.level = 1
+    def __init__(self, name="Adventurer"):
 
-        self.max_hp = 10
-        self.current_hp = 10
+        self.name = name
 
-        self.room = "start_room"
+        self.room = "ruined_outpost"
 
         self.inventory = []
 
-        # Basic ability scores (very simplified D&D-style)
-        self.strength = 10
-        self.dexterity = 10
-        self.constitution = 10
-        self.intelligence = 10
-        self.wisdom = 10
-        self.charisma = 10
+
+    def describe(self):
+
+        return {
+            "name": self.name,
+            "room": self.room,
+            "inventory": self.inventory
+        }
