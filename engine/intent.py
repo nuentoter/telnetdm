@@ -12,15 +12,35 @@ class Intent:
         }
 
 
+def clean_target(text):
+    """
+    Removes common filler words from player input.
+    """
+
+    filler = [
+        "the",
+        "a",
+        "an",
+        "that",
+        "this",
+        "my"
+    ]
+
+    words = text.split()
+
+    words = [
+        word for word in words
+        if word not in filler
+    ]
+
+    return " ".join(words)
+
+
 def parse_input(text):
-    """
-    Temporary parser.
-    Later replaced or assisted by local LLM.
-    """
 
     text = text.lower().strip()
 
-    # movement
+
     directions = [
         "north",
         "south",
@@ -36,7 +56,7 @@ def parse_input(text):
                 confidence=0.95
             )
 
-    # looking
+
     if any(word in text for word in [
         "look",
         "see",
@@ -48,7 +68,7 @@ def parse_input(text):
             confidence=0.9
         )
 
-    # taking
+
     if any(word in text for word in [
         "take",
         "grab",
@@ -58,6 +78,7 @@ def parse_input(text):
         "snatch",
         "steal"
     ]):
+
         cleaned = text
 
         for word in [
@@ -72,11 +93,13 @@ def parse_input(text):
         ]:
             cleaned = cleaned.replace(word, "")
 
+
         return Intent(
             action="take",
-            target=cleaned.strip(),
+            target=clean_target(cleaned.strip()),
             confidence=0.85
         )
+
 
     return Intent(
         action="unknown",
