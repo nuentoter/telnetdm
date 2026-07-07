@@ -1,5 +1,6 @@
 from engine.room import Room
 from engine.objects.item import Item
+from engine.objects.npc import NPC
 
 
 WORLD = {
@@ -44,6 +45,24 @@ WORLD = {
 
         ],
 
+        npcs=[
+
+            NPC(
+                npc_id="old_watchman",
+
+                name="Old Watchman",
+
+                description=(
+                    "A weathered guard leaning on a broken spear."
+                ),
+
+                dialogue=[
+                    "The forest has been restless lately..."
+                ]
+            )
+
+        ],
+
         hidden={
 
             "search":
@@ -55,6 +74,7 @@ WORLD = {
         }
 
     ),
+
 
     "forest_edge": Room(
 
@@ -72,6 +92,8 @@ WORLD = {
         },
 
         items=[],
+
+        npcs=[],
 
         hidden={
 
