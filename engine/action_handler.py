@@ -1,5 +1,6 @@
 from engine.resolver import resolve_item
 from engine.world import WORLD
+from engine.npc_resolver import resolve_npc
 
 
 def execute_action(session, action):
@@ -118,25 +119,28 @@ def take_item(session, target):
 
 
 
-def talk_to_npc(session, target):
+ddef talk_to_npc(session, target):
 
     room = WORLD[
         session.player.room
     ]
 
 
-    target = target.lower()
+    npc = resolve_npc(
+        target,
+        room.npcs
+    )
 
 
-    for npc in room.npcs:
+    if not npc:
 
-        if (
-            target in npc.name.lower()
-            or
-            target in npc.id.lower()
-        ):
+        return (
+            "You don't see anyone "
+            "by that name here."
+        )
 
-            return npc.speak()
+
+    return npc.speak()
 
 
     return (
