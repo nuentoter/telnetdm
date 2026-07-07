@@ -1,7 +1,7 @@
-from engine.game import Game
 import asyncio
 import telnetlib3
 
+from engine.game import Game
 from engine.session import Session
 from engine.player_storage import save_player, load_player
 
@@ -14,6 +14,7 @@ WELCOME_TEXT = (
     "Type:\r\n"
     "  look\r\n"
     "  go north/south\r\n"
+    "  inventory\r\n"
     "  quit\r\n"
     "\r\n"
     "> "
@@ -23,34 +24,35 @@ WELCOME_TEXT = (
 GAME = Game()
 
 
+
 async def shell(reader, writer):
 
     session = Session(writer)
 
+
     saved_player = load_player()
 
-if saved_player:
 
-    session.player.room = saved_player.get(
-        "room",
-        "start_room"
-    )
+    if saved_player:
+
+        session.player.room = saved_player.get(
+            "room",
+            "start_room"
+        )
 
 
-    session.player.inventory = saved_player.get(
-        "inventory",
-        []
-    )
-        session.player.room = saved_player["room"]
-        session.player.inventory = saved_player["inventory"]
-        session.player.level = saved_player["level"]
-        session.player.experience = saved_player["experience"]
-        session.player.stats = saved_player["stats"]
-        session.player.class_name = saved_player["class"]
+        session.player.inventory = saved_player.get(
+            "inventory",
+            []
+        )
+
 
     GAME.connect(session)
 
-    writer.write(WELCOME_TEXT)
+
+    writer.write(
+        WELCOME_TEXT
+    )
 
 
     while True:
@@ -59,6 +61,7 @@ if saved_player:
 
 
         if not cmd:
+
             break
 
 
@@ -93,10 +96,13 @@ if saved_player:
 
 
     save_player(
-    session.player
+        session.player
     )
 
+
     GAME.disconnect(session)
+
+
     writer.close()
 
 
