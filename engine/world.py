@@ -1,9 +1,11 @@
 from engine.room import Room
+from engine.objects.item import Item
 
 
 WORLD = {
 
     "start_room": Room(
+
         room_id="start_room",
 
         name="Ruined Outpost",
@@ -18,18 +20,41 @@ WORLD = {
         },
 
         items=[
-            "rusted key"
+
+            Item(
+                item_id="rusted_key",
+
+                name="rusted key",
+
+                aliases=[
+                    "key",
+                    "rusty key",
+                    "old key",
+                    "iron key"
+                ],
+
+                description=(
+                    "A weathered iron key coated in rust."
+                ),
+
+                weight=0.2,
+
+                value=1
+            )
+
         ],
 
         hidden={
+
             "search":
                 "You notice faint scratch marks on the stone floor.",
 
             "perception":
                 "You spot disturbed dirt near the eastern wall."
-        }
-    ),
 
+        }
+
+    ),
 
     "forest_edge": Room(
 
@@ -49,8 +74,12 @@ WORLD = {
         items=[],
 
         hidden={
+
             "perception":
                 "Something large recently moved through the underbrush."
+
         }
+
     )
+
 }
