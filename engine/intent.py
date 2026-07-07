@@ -107,6 +107,13 @@ def parse_input(text):
         "check"
     ]):
 
+        return Intent(
+            action="look",
+            confidence=0.9
+        )
+
+
+
     if any(word in text for word in [
         "inventory",
         "inv",
@@ -119,11 +126,6 @@ def parse_input(text):
         return Intent(
             action="inventory",
             confidence=0.95
-        )
-        
-        return Intent(
-            action="look",
-            confidence=0.9
         )
 
 
