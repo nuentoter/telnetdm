@@ -1,13 +1,26 @@
 import json
 import os
 
+
 PLAYER_FILE = "players.json"
 
 
 
 def save_player(player):
 
-    data = player.describe()
+    data = {
+
+        "room": player.room,
+
+        "inventory": [
+
+            item.id
+
+            for item in player.inventory
+
+        ]
+
+    }
 
 
     with open(
