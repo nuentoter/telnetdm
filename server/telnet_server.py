@@ -3,6 +3,7 @@ import asyncio
 import telnetlib3
 
 from engine.session import Session
+from engine.player_storage import save_player, load_player
 
 
 WELCOME_TEXT = (
@@ -25,6 +26,17 @@ GAME = Game()
 async def shell(reader, writer):
 
     session = Session(writer)
+
+    saved_player = load_player()
+
+    if saved_player:
+        session.player.name = saved_player["name"]
+        session.player.room = saved_player["room"]
+        session.player.inventory = saved_player["inventory"]
+        session.player.level = saved_player["level"]
+        session.player.experience = saved_player["experience"]
+        session.player.stats = saved_player["stats"]
+        session.player.class_name = saved_player["class"]
 
     GAME.connect(session)
 
@@ -70,8 +82,11 @@ async def shell(reader, writer):
         )
 
 
-    GAME.disconnect(session)
+    save_player(
+    session.player
+    )
 
+    GAME.disconnect(session)
     writer.close()
 
 
