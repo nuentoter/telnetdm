@@ -1,6 +1,7 @@
 from engine.world import WORLD
 
 
+
 class WorldManager:
 
     def __init__(self):
@@ -9,7 +10,10 @@ class WorldManager:
 
 
 
-    def get_room(self, room_id):
+    def get_room(
+        self,
+        room_id
+    ):
 
         return self.rooms.get(
             room_id
@@ -26,6 +30,11 @@ class WorldManager:
         room = self.get_room(
             player.room
         )
+
+
+        if not room:
+
+            return False
 
 
         if direction not in room.exits:
@@ -50,13 +59,36 @@ class WorldManager:
         )
 
 
-        if item in room.items:
+        if not room:
 
-            room.items.remove(
-                item
-            )
-
-            return True
+            return False
 
 
-        return False
+        return room.remove_item(
+            item
+        )
+
+
+
+    def add_item(
+        self,
+        room_id,
+        item
+    ):
+
+        room = self.get_room(
+            room_id
+        )
+
+
+        if not room:
+
+            return False
+
+
+        room.add_item(
+            item
+        )
+
+
+        return True
