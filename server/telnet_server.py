@@ -29,8 +29,18 @@ async def shell(reader, writer):
 
     saved_player = load_player()
 
-    if saved_player:
-        session.player.name = saved_player["name"]
+if saved_player:
+
+    session.player.room = saved_player.get(
+        "room",
+        "start_room"
+    )
+
+
+    session.player.inventory = saved_player.get(
+        "inventory",
+        []
+    )
         session.player.room = saved_player["room"]
         session.player.inventory = saved_player["inventory"]
         session.player.level = saved_player["level"]
