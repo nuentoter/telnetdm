@@ -119,7 +119,7 @@ def take_item(session, target):
 
 
 
-ddef talk_to_npc(session, target):
+def talk_to_npc(session, target):
 
     room = WORLD[
         session.player.room
