@@ -1,4 +1,5 @@
 from engine.commands import handle_command
+from engine.intent import parse_input
 
 
 class Game:
