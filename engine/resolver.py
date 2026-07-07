@@ -1,55 +1,16 @@
-def normalize_words(text):
-    """
-    Makes comparisons less strict.
-    """
+def resolve_item(text, items):
 
-    replacements = {
-        "rusty": "rusted",
-        "old": "",
-        "ancient": "",
-        "thing": "",
-        "object": ""
-    }
+    text = text.lower()
 
-    words = text.lower().split()
+    text = (
+        text.replace("the ", "")
+            .replace("a ", "")
+            .replace("an ", "")
+    )
 
-    cleaned = []
+    for item in items:
 
-    for word in words:
-        if word in replacements:
-            replacement = replacements[word]
-
-            if replacement:
-                cleaned.append(replacement)
-
-        else:
-            cleaned.append(word)
-
-    return cleaned
-
-
-
-def resolve_item(target, available_items):
-
-    target_words = normalize_words(target)
-
-
-    for item in available_items:
-
-        item_words = normalize_words(item)
-
-
-        matches = 0
-
-
-        for word in target_words:
-
-            if word in item_words:
-                matches += 1
-
-
-        if matches >= len(target_words):
+        if item.matches(text):
             return item
-
 
     return None
