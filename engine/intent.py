@@ -1,10 +1,21 @@
+from engine.system_actions import is_system_action
+
+
 class Intent:
-    def __init__(self, action, target=None, confidence=1.0):
+
+    def __init__(
+        self,
+        action,
+        target=None,
+        confidence=1.0
+    ):
         self.action = action
         self.target = target
         self.confidence = confidence
 
+
     def to_dict(self):
+
         return {
             "action": self.action,
             "target": self.target,
@@ -12,10 +23,8 @@ class Intent:
         }
 
 
+
 def clean_target(text):
-    """
-    Removes common filler words from player input.
-    """
 
     filler = [
         "the",
@@ -36,9 +45,19 @@ def clean_target(text):
     return " ".join(words)
 
 
+
 def parse_input(text):
 
     text = text.lower().strip()
+
+
+    if is_system_action(text):
+
+        return Intent(
+            action="system",
+            target=text,
+            confidence=1.0
+        )
 
 
     directions = [
@@ -48,13 +67,17 @@ def parse_input(text):
         "west"
     ]
 
+
     for direction in directions:
+
         if direction in text:
+
             return Intent(
                 action="move",
                 target=direction,
                 confidence=0.95
             )
+
 
 
     if any(word in text for word in [
@@ -63,10 +86,12 @@ def parse_input(text):
         "examine",
         "observe"
     ]):
+
         return Intent(
             action="look",
             confidence=0.9
         )
+
 
 
     if any(word in text for word in [
@@ -91,12 +116,18 @@ def parse_input(text):
             "snatch",
             "steal"
         ]:
-            cleaned = cleaned.replace(word, "")
+
+            cleaned = cleaned.replace(
+                word,
+                ""
+            )
 
 
         return Intent(
             action="take",
-            target=clean_target(cleaned.strip()),
+            target=clean_target(
+                cleaned.strip()
+            ),
             confidence=0.85
         )
 
