@@ -1,5 +1,6 @@
 from engine.commands import handle_command
 from engine.intent import parse_input
+from engine.actions import intent_to_action
 from engine.resolver import resolve_item
 
 
@@ -21,31 +22,33 @@ class Game:
 
         intent = parse_input(command)
 
-        print("DEBUG INTENT:", intent.to_dict())
+        action = intent_to_action(intent)
+
+        print("DEBUG ACTION:", action)
 
 
-        if intent.action == "move":
+        if action.type == "move":
             return handle_command(
                 session,
-                f"go {intent.target}"
+                f"go {action.target}"
             )
 
 
-        if intent.action == "look":
+        if action.type == "look":
             return handle_command(
                 session,
                 "look"
             )
 
 
-        if intent.action == "take":
+        if action.type == "take":
 
             from engine.world import WORLD
 
             room = WORLD[session.player.room]
 
             item = resolve_item(
-                intent.target,
+                action.target,
                 room.get("items", [])
             )
 
@@ -55,11 +58,9 @@ class Game:
                     f"take {item}"
                 )
 
-            session.send(
+            return (
                 "You don't see anything like that here."
             )
-
-            return
 
 
         return handle_command(
