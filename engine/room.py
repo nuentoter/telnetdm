@@ -7,8 +7,8 @@ class Room:
         description,
         exits=None,
         items=None,
-        npcs=None,
         hidden=None,
+        npcs=None
     ):
 
         self.id = room_id
@@ -21,25 +21,63 @@ class Room:
 
         self.items = items or []
 
+        self.hidden = hidden or {}
+
         self.npcs = npcs or []
 
-        self.hidden = hidden or {}
+
+
+        for item in self.items:
+
+            item.location = self.id
+
+
+
+    def add_item(self, item):
+
+        item.location = self.id
+
+        self.items.append(
+            item
+        )
+
+
+
+    def remove_item(self, item):
+
+        if item in self.items:
+
+            self.items.remove(
+                item
+            )
+
+            item.location = None
+
+            return True
+
+
+        return False
 
 
 
     def describe(self):
 
-        lines = []
+        output = []
 
 
-        lines.append(self.name)
+        output.append(
+            self.name
+        )
 
-        lines.append(self.description)
+
+        output.append(
+            self.description
+        )
 
 
         if self.exits:
 
-            lines.append(
+            output.append(
                 "Exits: "
                 +
                 ", ".join(
@@ -50,32 +88,16 @@ class Room:
 
         if self.items:
 
-            lines.append("")
-
-            lines.append(
+            output.append(
                 "You see:"
             )
 
+
             for item in self.items:
 
-                lines.append(
-                    f" - {item}"
+                output.append(
+                    f" - {item.name}"
                 )
 
 
-        if self.npcs:
-
-            lines.append("")
-
-            lines.append(
-                "People here:"
-            )
-
-            for npc in self.npcs:
-
-                lines.append(
-                    f" - {npc}"
-                )
-
-
-        return "\r\n".join(lines)
+        return "\r\n".join(output)
