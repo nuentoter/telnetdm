@@ -32,7 +32,11 @@ def clean_target(text):
         "an",
         "that",
         "this",
-        "my"
+        "my",
+        "to",
+        "with",
+        "about",
+        "at"
     ]
 
     words = text.split()
@@ -43,6 +47,19 @@ def clean_target(text):
     ]
 
     return " ".join(words)
+
+
+
+def remove_words(text, words):
+
+    for word in words:
+
+        text = text.replace(
+            word,
+            ""
+        )
+
+    return text.strip()
 
 
 
@@ -58,6 +75,7 @@ def parse_input(text):
             target=text,
             confidence=1.0
         )
+
 
 
     directions = [
@@ -84,7 +102,9 @@ def parse_input(text):
         "look",
         "see",
         "examine",
-        "observe"
+        "observe",
+        "inspect",
+        "check"
     ]):
 
         return Intent(
@@ -101,35 +121,67 @@ def parse_input(text):
         "pick",
         "yoink",
         "snatch",
-        "steal"
+        "steal",
+        "collect",
+        "pocket"
     ]):
 
-        cleaned = text
-
-        for word in [
-            "take",
-            "grab",
-            "get",
-            "pick",
-            "up",
-            "yoink",
-            "snatch",
-            "steal"
-        ]:
-
-            cleaned = cleaned.replace(
-                word,
-                ""
-            )
+        cleaned = remove_words(
+            text,
+            [
+                "take",
+                "grab",
+                "get",
+                "pick",
+                "up",
+                "yoink",
+                "snatch",
+                "steal",
+                "collect",
+                "pocket"
+            ]
+        )
 
 
         return Intent(
             action="take",
-            target=clean_target(
-                cleaned.strip()
-            ),
+            target=clean_target(cleaned),
             confidence=0.85
         )
+
+
+
+    if any(word in text for word in [
+        "talk",
+        "speak",
+        "ask",
+        "greet",
+        "hello",
+        "chat",
+        "conversation"
+    ]):
+
+        cleaned = remove_words(
+            text,
+            [
+                "talk",
+                "speak",
+                "ask",
+                "greet",
+                "hello",
+                "chat",
+                "conversation",
+                "say"
+            ]
+        )
+
+
+        return Intent(
+            action="talk",
+            target=clean_target(cleaned),
+            confidence=0.8
+        )
+
 
 
     return Intent(
