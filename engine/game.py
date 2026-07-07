@@ -1,4 +1,4 @@
-from engine.commands import handle_command
+from engine.action_handler import execute_action
 from engine.intent import parse_input
 from engine.actions import intent_to_action
 from engine.resolver import resolve_item
@@ -50,25 +50,10 @@ class Game:
             action
         )
 
-
-        if action.type == "move":
-
-            return handle_command(
-                session,
-                f"go {action.target}"
-            )
-
-
-        if action.type == "look":
-
-            return handle_command(
-                session,
-                "look"
-            )
-
-
-        if action.type == "take":
-
+return execute_action(
+    session,
+    action
+)
             from engine.world import WORLD
 
             room = WORLD[
