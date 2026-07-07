@@ -40,7 +40,13 @@ def execute_action(session, action):
             action.target
         )
 
+    if action.type == "inventory":
 
+        return show_inventory(
+            session
+        )
+
+    
 
     return (
         "You are unsure what you want to do."
@@ -148,3 +154,30 @@ def talk_to_npc(session, target):
         "by that name here."
     )
     
+def show_inventory(session):
+
+    inventory = session.player.inventory
+
+
+    if not inventory:
+
+        return (
+            "You are carrying nothing."
+        )
+
+
+    lines = [
+
+        "You are carrying:"
+
+    ]
+
+
+    for item in inventory:
+
+        lines.append(
+            f" - {item.name}"
+        )
+
+
+    return "\r\n".join(lines)
