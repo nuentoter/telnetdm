@@ -1,8 +1,6 @@
-from engine.action_handler import execute_action
 from engine.intent import parse_input
 from engine.actions import intent_to_action
-from engine.resolver import resolve_item
-
+from engine.action_handler import execute_action
 
 
 class Game:
@@ -11,15 +9,12 @@ class Game:
         self.sessions = {}
 
 
-
     def connect(self, session):
         self.sessions[id(session)] = session
 
 
-
     def disconnect(self, session):
         self.sessions.pop(id(session), None)
-
 
 
     def process_command(self, session, command):
@@ -50,43 +45,8 @@ class Game:
             action
         )
 
-return execute_action(
-    session,
-    action
-)
-            
-from engine.world import WORLD
 
-            room = WORLD[
-                session.player.room
-            ]
-
-
-            item = resolve_item(
-                action.target,
-                room.get(
-                    "items",
-                    []
-                )
-            )
-
-
-            if item:
-
-                return handle_command(
-                    session,
-                    f"take {item}"
-                )
-
-
-            return (
-                "You don't see anything "
-                "like that here."
-            )
-
-
-
-        return handle_command(
+        return execute_action(
             session,
-            command
+            action
         )
