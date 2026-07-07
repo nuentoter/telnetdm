@@ -6,9 +6,8 @@ class Item:
         name,
         aliases=None,
         description="",
-        weight=0.0,
-        value=0,
-        portable=True,
+        weight=0,
+        value=0
     ):
 
         self.id = item_id
@@ -23,22 +22,40 @@ class Item:
 
         self.value = value
 
-        self.portable = portable
+        self.location = None
+
 
 
     def matches(self, text):
 
         text = text.lower()
 
-        if text == self.name.lower():
+
+        if text == self.id.lower():
+
             return True
 
+
+        if text == self.name.lower():
+
+            return True
+
+
         for alias in self.aliases:
+
             if text == alias.lower():
+
                 return True
+
 
         return False
 
 
-    def __str__(self):
-        return self.name
+
+    def __repr__(self):
+
+        return (
+            f"Item("
+            f"{self.id}"
+            f")"
+        )
