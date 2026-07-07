@@ -1,17 +1,20 @@
 from engine.resolver import resolve_item
-from engine.world import WORLD
 from engine.npc_resolver import resolve_npc
 
 
-def execute_action(session, action):
+
+def execute_action(session, action, world):
+
 
     if action.type == "look":
 
-        room = WORLD[
+        room = world.get_room(
             session.player.room
-        ]
+        )
 
-        return describe_room(room)
+        return describe_room(
+            room
+        )
 
 
 
@@ -19,7 +22,8 @@ def execute_action(session, action):
 
         return move_player(
             session,
-            action.target
+            action.target,
+            world
         )
 
 
@@ -28,7 +32,8 @@ def execute_action(session, action):
 
         return take_item(
             session,
-            action.target
+            action.target,
+            world
         )
 
 
@@ -37,8 +42,11 @@ def execute_action(session, action):
 
         return talk_to_npc(
             session,
-            action.target
+            action.target,
+            world
         )
+
+
 
     if action.type == "inventory":
 
@@ -46,7 +54,7 @@ def execute_action(session, action):
             session
         )
 
-    
+
 
     return (
         "You are unsure what you want to do."
@@ -60,41 +68,37 @@ def describe_room(room):
 
 
 
-def move_player(session, direction):
+def move_player(session, direction, world):
 
-    room = WORLD[
-        session.player.room
-    ]
+    success = world.move_player(
+        session.player,
+        direction
+    )
 
 
-    if direction not in room.exits:
+    if not success:
 
         return (
             "You cannot go that way."
         )
 
 
-    session.player.room = (
-        room.exits[direction]
-    )
-
-
-    new_room = WORLD[
+    room = world.get_room(
         session.player.room
-    ]
+    )
 
 
     return describe_room(
-        new_room
+        room
     )
 
 
 
-def take_item(session, target):
+def take_item(session, target, world):
 
-    room = WORLD[
+    room = world.get_room(
         session.player.room
-    ]
+    )
 
 
     item = resolve_item(
@@ -111,7 +115,10 @@ def take_item(session, target):
         )
 
 
-    room.items.remove(item)
+    world.remove_item(
+        session.player.room,
+        item
+    )
 
 
     session.player.add_item(
@@ -125,11 +132,11 @@ def take_item(session, target):
 
 
 
-def talk_to_npc(session, target):
+def talk_to_npc(session, target, world):
 
-    room = WORLD[
+    room = world.get_room(
         session.player.room
-    ]
+    )
 
 
     npc = resolve_npc(
@@ -149,11 +156,7 @@ def talk_to_npc(session, target):
     return npc.speak()
 
 
-    return (
-        "You don't see anyone "
-        "by that name here."
-    )
-    
+
 def show_inventory(session):
 
     inventory = session.player.inventory
@@ -166,18 +169,16 @@ def show_inventory(session):
         )
 
 
-    lines = [
-
+    output = [
         "You are carrying:"
-
     ]
 
 
     for item in inventory:
 
-        lines.append(
+        output.append(
             f" - {item.name}"
         )
 
 
-    return "\r\n".join(lines)
+    return "\r\n".join(output)
