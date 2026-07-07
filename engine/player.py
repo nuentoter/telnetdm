@@ -6,7 +6,7 @@ class Player:
 
         self.name = name
 
-        self.room = "ruined_outpost"
+        self.room = "start_room"
 
         self.inventory = []
 
