@@ -54,7 +54,8 @@ return execute_action(
     session,
     action
 )
-            from engine.world import WORLD
+            
+from engine.world import WORLD
 
             room = WORLD[
                 session.player.room
