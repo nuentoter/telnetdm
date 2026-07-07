@@ -40,11 +40,23 @@ async def shell(reader, writer):
 
         result = GAME.process_command(session, cmd)
 
-        if result == "quit":
-            writer.write("\r\nFarewell, adventurer.\r\n")
-            break
 
-        writer.write("\r\n> ")
+if result == "quit":
+    writer.write(
+        "\r\nFarewell, adventurer.\r\n"
+    )
+    break
+
+
+if result:
+    writer.write(
+        "\r\n" + result + "\r\n"
+    )
+
+
+writer.write(
+    "\r\n> "
+)
     
     GAME.disconnect(session)
     
