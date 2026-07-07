@@ -98,7 +98,7 @@ def parse_input(text):
 
 
 
-        if any(word in text for word in [
+    if any(word in text for word in [
         "look",
         "see",
         "examine",
