@@ -58,6 +58,7 @@ writer.write(
     "\r\n> "
 )
     
+    
     GAME.disconnect(session)
     
     writer.close()
