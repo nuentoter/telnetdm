@@ -1,5 +1,7 @@
 from engine.resolver import resolve_item
 from engine.npc_resolver import resolve_npc
+from engine.combat import Combat
+
 
 
 ACTION_TABLE = {}
@@ -61,6 +63,63 @@ def do_look(
     )
 
     return room.describe()
+
+
+@action("attack")
+def do_attack(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    if not hasattr(
+        session,
+        "combat"
+    ):
+
+        return "There is nothing to attack."
+
+
+    result = session.combat.player_attack()
+
+
+    if session.combat.finished():
+
+        enemy = session.combat.enemy
+
+        session.player.gain_xp(
+            enemy.xp_reward
+        )
+
+
+        session.combat = None
+
+
+        return (
+
+            f"You defeat the {enemy.name}!\r\n"
+
+            f"You gain {enemy.xp_reward} XP."
+
+        )
+
+
+    enemy_result = session.combat.enemy_attack()
+
+
+    return (
+
+        f"You deal {result['damage']} damage.\r\n"
+
+        f"Enemy HP: {result['enemy_hp']}\r\n"
+
+        f"The enemy hits you for {enemy_result['damage']} damage."
+
+    )
 
 
 @action("move")
