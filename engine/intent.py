@@ -113,15 +113,22 @@ def parse_input(text):
         )
 
 
-
     if any(word in text for word in [
         "inventory",
         "inv",
         "i",
         "items",
         "belongings",
-        "carrying"
+        "carrying",
+        "stats",
+        "status",
+        "character"
     ]):
+
+    return Intent(
+        action="inventory",
+        confidence=0.95
+    )
 
         return Intent(
             action="inventory",
