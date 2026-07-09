@@ -9,6 +9,7 @@ class Intent:
         target=None,
         confidence=1.0
     ):
+
         self.action = action
         self.target = target
         self.confidence = confidence
@@ -77,7 +78,6 @@ def parse_input(text):
         )
 
 
-
     directions = [
         "north",
         "south",
@@ -97,23 +97,8 @@ def parse_input(text):
             )
 
 
-
     if any(word in text for word in [
-        "look",
-        "see",
-        "examine",
-        "observe",
-        "inspect",
-        "check"
-    ]):
 
-        return Intent(
-            action="look",
-            confidence=0.9
-        )
-
-
-    if any(word in text for word in [
         "inventory",
         "inv",
         "i",
@@ -123,12 +108,8 @@ def parse_input(text):
         "stats",
         "status",
         "character"
-    ]):
 
-    return Intent(
-        action="inventory",
-        confidence=0.95
-    )
+    ]):
 
         return Intent(
             action="inventory",
@@ -136,8 +117,25 @@ def parse_input(text):
         )
 
 
+    if any(word in text for word in [
+
+        "look",
+        "see",
+        "examine",
+        "observe",
+        "inspect",
+        "check"
+
+    ]):
+
+        return Intent(
+            action="look",
+            confidence=0.9
+        )
+
 
     if any(word in text for word in [
+
         "take",
         "grab",
         "get",
@@ -147,6 +145,7 @@ def parse_input(text):
         "steal",
         "collect",
         "pocket"
+
     ]):
 
         cleaned = remove_words(
@@ -168,13 +167,44 @@ def parse_input(text):
 
         return Intent(
             action="take",
-            target=clean_target(cleaned),
+            target=clean_target(
+                cleaned
+            ),
             confidence=0.85
         )
 
 
+    if any(word in text for word in [
+
+        "drop",
+        "leave",
+        "put",
+        "discard"
+
+    ]):
+
+        cleaned = remove_words(
+            text,
+            [
+                "drop",
+                "leave",
+                "put",
+                "discard"
+            ]
+        )
+
+
+        return Intent(
+            action="drop",
+            target=clean_target(
+                cleaned
+            ),
+            confidence=0.85
+        )
+
 
     if any(word in text for word in [
+
         "talk",
         "speak",
         "ask",
@@ -182,6 +212,7 @@ def parse_input(text):
         "hello",
         "chat",
         "conversation"
+
     ]):
 
         cleaned = remove_words(
@@ -201,10 +232,11 @@ def parse_input(text):
 
         return Intent(
             action="talk",
-            target=clean_target(cleaned),
+            target=clean_target(
+                cleaned
+            ),
             confidence=0.8
         )
-
 
 
     return Intent(
