@@ -1,12 +1,43 @@
 from engine.world import WORLD
 
 
-
 class WorldManager:
 
-    def __init__(self):
+    def __init__(
+        self,
+        registry
+    ):
+
+        self.registry = registry
 
         self.rooms = WORLD
+
+
+        self._register_world()
+
+
+
+    def _register_world(self):
+
+        for room in self.rooms.values():
+
+            self.registry.register(
+                room
+            )
+
+
+            for item in room.items:
+
+                self.registry.register(
+                    item
+                )
+
+
+            for npc in room.npcs:
+
+                self.registry.register(
+                    npc
+                )
 
 
 
@@ -42,31 +73,11 @@ class WorldManager:
             return False
 
 
-        player.room = room.exits[direction]
+        player.room = room.exits[
+            direction
+        ]
 
         return True
-
-
-
-    def remove_item(
-        self,
-        room_id,
-        item
-    ):
-
-        room = self.get_room(
-            room_id
-        )
-
-
-        if not room:
-
-            return False
-
-
-        return room.remove_item(
-            item
-        )
 
 
 
@@ -81,14 +92,35 @@ class WorldManager:
         )
 
 
-        if not room:
+        if room:
 
-            return False
+            room.add_item(
+                item
+            )
+
+            return True
 
 
-        room.add_item(
-            item
+        return False
+
+
+
+    def remove_item(
+        self,
+        room_id,
+        item
+    ):
+
+        room = self.get_room(
+            room_id
         )
 
 
-        return True
+        if room:
+
+            return room.remove_item(
+                item
+            )
+
+
+        return False
