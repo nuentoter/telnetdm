@@ -1,7 +1,8 @@
-from engine.action_handler import execute_action
 from engine.intent import parse_input
 from engine.actions import intent_to_action
+from engine.action_handler import execute_action
 from engine.world_manager import WorldManager
+from engine.registry import Registry
 
 
 class Game:
@@ -10,17 +11,29 @@ class Game:
 
         self.sessions = {}
 
-        self.world = WorldManager()
+        self.registry = Registry()
+
+        self.world = WorldManager(
+            self.registry
+        )
 
 
 
-    def connect(self, session):
+    def connect(
+        self,
+        session
+    ):
 
-        self.sessions[id(session)] = session
+        self.sessions[
+            id(session)
+        ] = session
 
 
 
-    def disconnect(self, session):
+    def disconnect(
+        self,
+        session
+    ):
 
         self.sessions.pop(
             id(session),
@@ -35,25 +48,22 @@ class Game:
         command
     ):
 
-        intent = parse_input(command)
-
-
-        print(
-            "DEBUG INTENT:",
-            intent.to_dict()
+        intent = parse_input(
+            command
         )
 
 
         if intent.action == "system":
 
             if intent.target in [
+
                 "quit",
                 "exit",
                 "logout"
+
             ]:
 
                 return "quit"
-
 
 
         action = intent_to_action(
@@ -61,14 +71,11 @@ class Game:
         )
 
 
-        print(
-            "DEBUG ACTION:",
-            action
-        )
-
-
         return execute_action(
+
             session,
+
             action,
+
             self.world
         )
