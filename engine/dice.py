@@ -1,37 +1,44 @@
 import random
 
 
-def roll(sides: int):
-    return random.randint(1, sides)
+def roll(
+    sides,
+    count=1
+):
+
+    results = []
+
+    for _ in range(count):
+
+        results.append(
+            random.randint(
+                1,
+                sides
+            )
+        )
+
+    return results
 
 
-def d2():
-    return roll(2)
+
+def total(
+    sides,
+    count=1
+):
+
+    return sum(
+        roll(
+            sides,
+            count
+        )
+    )
 
 
-def d4():
-    return roll(4)
 
+def ability_check(
+    modifier=0
+):
 
-def d6():
-    return roll(6)
-
-
-def d8():
-    return roll(8)
-
-
-def d10():
-    return roll(10)
-
-
-def d12():
-    return roll(12)
-
-
-def d20():
-    return roll(20)
-
-
-def d100():
-    return roll(100)
+    return roll(
+        20
+    )[0] + modifier
