@@ -2,183 +2,226 @@ from engine.resolver import resolve_item
 from engine.npc_resolver import resolve_npc
 
 
-
-def execute_action(session, action, world):
-
-
-    if action.type == "look":
-
-        room = world.get_room(
-            session.player.room
-        )
-
-        return describe_room(
-            room
-        )
+ACTION_TABLE = {}
 
 
+def action(name):
 
-    if action.type == "move":
+    def decorator(func):
 
-        return move_player(
-            session,
-            action.target,
-            world
-        )
+        ACTION_TABLE[name] = func
 
+        return func
 
-
-    if action.type == "take":
-
-        return take_item(
-            session,
-            action.target,
-            world
-        )
+    return decorator
 
 
+def execute_action(
 
-    if action.type == "talk":
+    session,
 
-        return talk_to_npc(
-            session,
-            action.target,
-            world
-        )
+    action,
 
+    world
 
+):
 
-    if action.type == "inventory":
-
-        return show_inventory(
-            session
-        )
-
-
-
-    return (
-        "You are unsure what you want to do."
+    func = ACTION_TABLE.get(
+        action.type
     )
 
+    if func:
+
+        return func(
+
+            session,
+
+            action,
+
+            world
+
+        )
+
+    return "Nothing happens."
 
 
-def describe_room(room):
+@action("look")
+def do_look(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    room = world.get_room(
+        session.player.room
+    )
 
     return room.describe()
 
 
+@action("move")
+def do_move(
 
-def move_player(session, direction, world):
+    session,
 
-    success = world.move_player(
+    action,
+
+    world
+
+):
+
+    if not world.move_player(
+
         session.player,
-        direction
-    )
+
+        action.target
+
+    ):
+
+        return "You cannot go that way."
+
+    return world.get_room(
+
+        session.player.room
+
+    ).describe()
 
 
-    if not success:
+@action("take")
+def do_take(
 
-        return (
-            "You cannot go that way."
-        )
+    session,
 
+    action,
+
+    world
+
+):
 
     room = world.get_room(
         session.player.room
     )
-
-
-    return describe_room(
-        room
-    )
-
-
-
-def take_item(session, target, world):
-
-    room = world.get_room(
-        session.player.room
-    )
-
 
     item = resolve_item(
-        target,
+        action.target,
         room.items
     )
 
-
     if not item:
 
-        return (
-            "You don't see "
-            "anything like that here."
-        )
-
+        return "You don't see that here."
 
     world.remove_item(
-        session.player.room,
+        room.id,
         item
     )
-
 
     session.player.add_item(
         item
     )
 
+    return f"You take the {item.name}."
 
-    return (
-        f"You take the {item.name}."
+
+@action("drop")
+def do_drop(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    item = resolve_item(
+
+        action.target,
+
+        session.player.inventory
+
     )
 
+    if not item:
+
+        return "You aren't carrying that."
+
+    session.player.inventory.remove(
+        item
+    )
+
+    world.add_item(
+
+        session.player.room,
+
+        item
+
+    )
+
+    return f"You drop the {item.name}."
 
 
-def talk_to_npc(session, target, world):
+@action("inventory")
+def do_inventory(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    if not session.player.inventory:
+
+        return "You are carrying nothing."
+
+    lines = [
+
+        "You are carrying:"
+
+    ]
+
+    for item in session.player.inventory:
+
+        lines.append(
+
+            f" - {item.name}"
+
+        )
+
+    return "\r\n".join(lines)
+
+
+@action("talk")
+def do_talk(
+
+    session,
+
+    action,
+
+    world
+
+):
 
     room = world.get_room(
         session.player.room
     )
 
-
     npc = resolve_npc(
-        target,
-        room.npcs
-    )
 
+        action.target,
+
+        room.npcs
+
+    )
 
     if not npc:
 
-        return (
-            "You don't see anyone "
-            "by that name here."
-        )
-
+        return "Nobody by that name is here."
 
     return npc.speak()
-
-
-
-def show_inventory(session):
-
-    inventory = session.player.inventory
-
-
-    if not inventory:
-
-        return (
-            "You are carrying nothing."
-        )
-
-
-    output = [
-        "You are carrying:"
-    ]
-
-
-    for item in inventory:
-
-        output.append(
-            f" - {item.name}"
-        )
-
-
-    return "\r\n".join(output)
