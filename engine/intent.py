@@ -238,7 +238,28 @@ def parse_input(text):
             confidence=0.8
         )
 
+    if any(word in text for word in [
 
+        "attack",
+        "hit",
+        "strike",
+        "fight",
+        "kill"
+
+    ]):
+
+        return Intent(
+
+            action="attack",
+
+            target=None,
+
+            confidence=0.9
+
+        )
+
+
+    
     return Intent(
         action="unknown",
         target=text,
