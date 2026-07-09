@@ -1,42 +1,14 @@
 import json
 import os
 
-from engine.world import WORLD
-
 
 PLAYER_FILE = "players.json"
 
 
 
-def find_item(item_id):
-
-    for room in WORLD.values():
-
-        for item in room.items:
-
-            if item.id == item_id:
-
-                return item
-
-    return None
-
-
-
 def save_player(player):
 
-    data = {
-
-        "room": player.room,
-
-        "inventory": [
-
-            item.id
-
-            for item in player.inventory
-
-        ]
-
-    }
+    data = player.describe()
 
 
     with open(
@@ -66,30 +38,55 @@ def load_player():
         "r"
     ) as file:
 
-        data = json.load(file)
+        return json.load(file)
 
 
-    restored_inventory = []
+
+def apply_saved_player(
+    player,
+    data
+):
+
+    player.name = data.get(
+        "name",
+        "Adventurer"
+    )
 
 
-    for item_id in data.get(
-        "inventory",
-        []
-    ):
-
-        item = find_item(
-            item_id
-        )
+    player.class_name = data.get(
+        "class",
+        "fighter"
+    )
 
 
-        if item:
-
-            restored_inventory.append(
-                item
-            )
-
-
-    data["inventory"] = restored_inventory
+    player.room = data.get(
+        "room",
+        "start_room"
+    )
 
 
-    return data
+    player.level = data.get(
+        "level",
+        1
+    )
+
+
+    player.experience = data.get(
+        "experience",
+        0
+    )
+
+
+    player.hp = data.get(
+        "hp",
+        10
+    )
+
+
+    player.max_hp = data.get(
+        "max_hp",
+        10
+    )
+
+
+    return player
