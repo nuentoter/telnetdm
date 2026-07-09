@@ -1,6 +1,10 @@
+from engine.parser import Parser
+from engine.dispatcher import Dispatcher
+
 from engine.intent import parse_input
 from engine.actions import intent_to_action
 from engine.action_handler import execute_action
+
 from engine.world_manager import WorldManager
 from engine.registry import Registry
 
@@ -15,6 +19,12 @@ class Game:
 
         self.world = WorldManager(
             self.registry
+        )
+
+        self.parser = Parser()
+
+        self.dispatcher = Dispatcher(
+            execute_action
         )
 
 
@@ -43,12 +53,16 @@ class Game:
 
 
     def process_command(
+
         self,
+
         session,
+
         command
+
     ):
 
-        intent = parse_input(
+        intent = self.parser.parse(
             command
         )
 
@@ -71,11 +85,12 @@ class Game:
         )
 
 
-        return execute_action(
+        return self.dispatcher.dispatch(
 
             session,
 
             action,
 
             self.world
+
         )
