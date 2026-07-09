@@ -1,5 +1,6 @@
 from engine.resolver import resolve_item
 from engine.npc_resolver import resolve_npc
+from engine.encounter import check_encounter
 from engine.combat import Combat
 
 
@@ -132,6 +133,60 @@ def do_move(
     world
 
 ):
+
+    if not world.move_player(
+
+        session.player,
+
+        action.target
+
+    ):
+
+        return "You cannot go that way."
+
+
+    room = world.get_room(
+
+        session.player.room
+
+    )
+
+
+    result = room.describe()
+
+
+    encounter = check_encounter(
+
+        room.id
+
+    )
+
+
+    if encounter:
+
+        session.combat = Combat(
+
+            session.player,
+
+            encounter
+
+        )
+
+
+        result += (
+
+            "\r\n\r\n"
+
+            f"A {encounter.name} appears!"
+
+            "\r\n"
+
+            "Type: attack"
+
+        )
+
+
+    return result
 
     if not world.move_player(
 
