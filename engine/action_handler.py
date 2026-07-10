@@ -47,10 +47,14 @@ def execute_action(
 
 
 
-# Load action modules after the registry exists
+def load_actions():
 
-from engine.actions.look_move import *
-from engine.actions.inventory import *
-from engine.actions.equipment import *
-from engine.actions.combat_actions import *
-from engine.actions.interaction import *
+    import engine.actions.look_move
+    import engine.actions.inventory
+    import engine.actions.equipment
+    import engine.actions.combat_actions
+    import engine.actions.interaction
+
+
+
+load_actions()
