@@ -339,7 +339,7 @@ def parse_input(text):
 
         )
 
-    if any(word in text for word in [
+    if any(phrase in text for phrase in [
 
         "equip",
         "wear",
