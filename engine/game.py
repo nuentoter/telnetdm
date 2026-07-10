@@ -85,6 +85,12 @@ class Game:
         )
 
 
+print(
+    "DEBUG ACTION:",
+    action
+)
+
+        
         return self.dispatcher.dispatch(
 
             session,
