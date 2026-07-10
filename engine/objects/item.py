@@ -1,4 +1,4 @@
-class Item(Entity):
+class Item:
 
     def __init__(
 
@@ -8,9 +8,9 @@ class Item(Entity):
 
         name,
 
-        aliases,
+        aliases=None,
 
-        description,
+        description="",
 
         item_type="misc",
 
@@ -26,12 +26,11 @@ class Item(Entity):
 
     ):
 
-        super().__init__(
-            item_id,
-            name
-        )
+        self.id = item_id
 
-        self.aliases = aliases
+        self.name = name
+
+        self.aliases = aliases or []
 
         self.description = description
 
@@ -46,3 +45,41 @@ class Item(Entity):
         self.weight = weight
 
         self.value = value
+
+
+
+    def matches(
+
+        self,
+
+        text
+
+    ):
+
+        text = text.lower()
+
+        return (
+
+            text == self.name.lower()
+
+            or
+
+            text == self.id.lower()
+
+            or
+
+            text in [
+
+                alias.lower()
+
+                for alias in self.aliases
+
+            ]
+
+        )
+
+
+
+    def describe(self):
+
+        return self.description
