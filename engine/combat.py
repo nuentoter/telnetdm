@@ -40,7 +40,7 @@ else:
 
     damage = roll(4)[0]
 
-        if critical:
+    if critical:
             damage *= 2
 
         self.enemy.hp -= damage
