@@ -28,8 +28,17 @@ class Combat:
         critical = (
             attack_roll == 20
         )
+weapon = player.equipment["weapon"]
 
-        damage = roll(6)[0]
+if weapon:
+
+    damage = roll(
+        weapon.damage
+    )[0]
+
+else:
+
+    damage = roll(4)[0]
 
         if critical:
             damage *= 2
