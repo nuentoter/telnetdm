@@ -45,7 +45,7 @@ else:
 
     self.enemy.hp -= damage
 
-        return {
+    return {
             "hit": attack_total >= 10,
             "critical": critical,
             "attack_roll": attack_roll,
