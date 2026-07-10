@@ -48,6 +48,12 @@ def execute_action(
     return "Nothing happens."
 
 
+@action("equip")
+
+@action("unequip")
+
+
+
 @action("look")
 def do_look(
 
