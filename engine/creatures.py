@@ -1,4 +1,5 @@
 from engine.objects.item import Item
+from engine.loot import LootDrop
 
 
 
@@ -18,7 +19,7 @@ class Creature:
 
         xp_reward,
 
-        loot=None
+        loot_table=None
 
     ):
 
@@ -34,7 +35,7 @@ class Creature:
 
         self.xp_reward = xp_reward
 
-        self.loot = loot or []
+        self.loot_table = loot_table or []
 
 
 
@@ -52,10 +53,52 @@ class Creature:
 
 
 
+    def generate_loot(self):
+
+        from engine.loot import generate_loot
+
+
+        return generate_loot(
+
+            self.loot_table
+
+        )
+
+
+
+
+
 def create_creature(creature_id):
 
 
     if creature_id == "forest_wolf":
+
+
+        wolf_fang = Item(
+
+            item_id="wolf_fang",
+
+            name="wolf fang",
+
+            aliases=[
+
+                "fang",
+
+                "tooth"
+
+            ],
+
+            description=(
+
+                "A sharp fang taken from a forest wolf."
+
+            ),
+
+            weight=0.1,
+
+            value=5
+
+        )
 
 
         return Creature(
@@ -66,9 +109,9 @@ def create_creature(creature_id):
 
             description=(
 
-                "A large gray predator "
+                "A large gray predator watching "
 
-                "watching with hungry eyes."
+                "with hungry eyes."
 
             ),
 
@@ -76,25 +119,23 @@ def create_creature(creature_id):
 
             xp_reward=50,
 
-            loot=[
+            loot_table=[
 
-                Item(
+                LootDrop(
 
-                    "wolf_fang",
+                    item=wolf_fang,
 
-                    "wolf fang",
+                    chance=1.0
 
-                    [
+                ),
 
-                        "fang",
+                LootDrop(
 
-                        "tooth"
+                    gold_min=3,
 
-                    ],
+                    gold_max=10,
 
-                    "A sharp fang taken from a forest wolf.",
-
-                    value=5
+                    chance=0.75
 
                 )
 
