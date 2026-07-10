@@ -4,6 +4,7 @@ from engine.encounter import check_encounter
 from engine.combat import Combat
 
 
+
 ACTION_TABLE = {}
 
 
@@ -20,6 +21,8 @@ def action(name):
 
 
 
+
+
 def execute_action(
 
     session,
@@ -31,7 +34,9 @@ def execute_action(
 ):
 
     func = ACTION_TABLE.get(
+
         action.type
+
     )
 
 
@@ -52,6 +57,8 @@ def execute_action(
 
 
 
+
+
 @action("look")
 def do_look(
 
@@ -64,160 +71,15 @@ def do_look(
 ):
 
     room = world.get_room(
+
         session.player.room
+
     )
+
 
     return room.describe()
 
 
-
-@action("equip")
-def do_equip(
-
-    session,
-
-    action,
-
-    world
-
-):
-
-    item = resolve_item(
-
-        action.target,
-
-        session.player.inventory
-
-    )
-
-
-    if not item:
-
-        return "You do not have that item."
-
-
-    if not item.slot:
-
-        return "You cannot equip that."
-
-
-    session.player.equip(
-        item
-    )
-
-
-    return f"You equip the {item.name}."
-
-
-
-@action("unequip")
-def do_unequip(
-
-    session,
-
-    action,
-
-    world
-
-):
-
-    for slot, item in session.player.equipment.items():
-
-        if item and item.matches(action.target):
-
-            session.player.unequip(
-                slot
-            )
-
-
-            return f"You remove the {item.name}."
-
-
-    return "You are not wearing that."
-
-
-
-@action("take")
-def do_take(
-
-    session,
-
-    action,
-
-    world
-
-):
-
-    room = world.get_room(
-        session.player.room
-    )
-
-
-    item = resolve_item(
-
-        action.target,
-
-        room.items
-
-    )
-
-
-    if not item:
-
-        return "You don't see that here."
-
-
-    world.remove_item(
-
-        room.id,
-
-        item
-
-    )
-
-
-    session.player.add_item(
-        item
-    )
-
-
-    return f"You take the {item.name}."
-
-
-
-@action("inventory")
-def do_inventory(
-
-    session,
-
-    action,
-
-    world
-
-):
-
-    if not session.player.inventory:
-
-        return "You are carrying nothing."
-
-
-    lines = [
-
-        "You are carrying:"
-
-    ]
-
-
-    for item in session.player.inventory:
-
-        lines.append(
-
-            f" - {item.name}"
-
-        )
-
-
-    return "\r\n".join(lines)
 
 
 
@@ -288,6 +150,8 @@ def do_move(
 
 
 
+
+
 @action("attack")
 def do_attack(
 
@@ -317,36 +181,49 @@ def do_attack(
         if result["critical"]:
 
             output.append(
+
                 "Critical hit!"
+
             )
 
 
         output.append(
 
-            f"You hit the {session.combat.enemy.name} "
+            f"You hit the "
+
+            f"{session.combat.enemy.name} "
+
             f"for {result['damage']} damage."
 
         )
 
+
     else:
 
         output.append(
+
             "You miss."
+
         )
 
 
 
     if session.combat.enemy.hp <= 0:
 
+
         enemy = session.combat.enemy
 
+
         xp = enemy.xp_reward
+
 
         enemy_name = enemy.name
 
 
         session.player.gain_xp(
+
             xp
+
         )
 
 
@@ -364,39 +241,63 @@ def do_attack(
         )
 
 
-        if enemy.loot:
-
-            for item in enemy.loot:
-
-                session.player.add_item(
-                    item
-                )
+        loot = enemy.generate_loot()
 
 
-                output.append(
+        for item in loot["items"]:
 
-                    f"You found: {item.name}"
+            session.player.add_item(
 
-                )
+                item
+
+            )
+
+
+            output.append(
+
+                f"You found: {item.name}"
+
+            )
+
+
+        if loot["gold"] > 0:
+
+            session.player.gold += loot["gold"]
+
+
+            output.append(
+
+                f"You found {loot['gold']} gold."
+
+            )
 
 
         session.combat = None
 
 
-        return "\r\n".join(output)
+        return "\r\n".join(
+
+            output
+
+        )
 
 
 
-    enemy = session.combat.enemy_attack()
+    enemy_result = session.combat.enemy_attack()
 
 
 
-    if enemy["hit"]:
+    if enemy_result["hit"]:
 
         output.append(
 
-            f"The {session.combat.enemy.name} "
-            f"hits you for {enemy['damage']} damage."
+            f"The "
+
+            f"{session.combat.enemy.name} "
+
+            f"hits you for "
+
+            f"{enemy_result['damage']} damage."
 
         )
 
@@ -404,7 +305,33 @@ def do_attack(
 
         output.append(
 
-            f"The {session.combat.enemy.name} misses."
+            f"The "
+
+            f"{session.combat.enemy.name} "
+
+            f"misses."
+
+        )
+
+
+
+    if session.player.hp <= 0:
+
+        session.player.hp = 1
+
+        session.combat = None
+
+
+        output.append(
+
+            "You collapse from your wounds."
+
+        )
+
+
+        return "\r\n".join(
+
+            output
 
         )
 
@@ -412,12 +339,24 @@ def do_attack(
 
     output.append(
 
-        f"HP: {session.player.hp}/{session.player.max_hp}"
+        f"HP: "
+
+        f"{session.player.hp}/"
+
+        f"{session.player.max_hp}"
 
     )
 
 
-    return "\r\n".join(output)
+    return "\r\n".join(
+
+        output
+
+    )
+
+
+
+
 
 @action("enemy")
 def do_enemy(
@@ -436,6 +375,8 @@ def do_enemy(
 
 
     return session.combat.enemy.describe()
+
+
 
 
 
@@ -462,6 +403,175 @@ def do_flee(
 
 
 
+
+
+@action("take")
+def do_take(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    room = world.get_room(
+
+        session.player.room
+
+    )
+
+
+    item = resolve_item(
+
+        action.target,
+
+        room.items
+
+    )
+
+
+    if not item:
+
+        return "You don't see that here."
+
+
+
+    world.remove_item(
+
+        room.id,
+
+        item
+
+    )
+
+
+    session.player.add_item(
+
+        item
+
+    )
+
+
+    return f"You take the {item.name}."
+
+
+
+
+
+@action("drop")
+def do_drop(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    item = resolve_item(
+
+        action.target,
+
+        session.player.inventory
+
+    )
+
+
+    if not item:
+
+        return "You aren't carrying that."
+
+
+
+    session.player.inventory.remove(
+
+        item
+
+    )
+
+
+    world.add_item(
+
+        session.player.room,
+
+        item
+
+    )
+
+
+    return f"You drop the {item.name}."
+
+
+
+
+
+@action("inventory")
+def do_inventory(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    lines = []
+
+
+    lines.append(
+
+        f"Gold: {session.player.gold}"
+
+    )
+
+
+    if not session.player.inventory:
+
+        lines.append(
+
+            "You are carrying nothing."
+
+        )
+
+
+        return "\r\n".join(
+
+            lines
+
+        )
+
+
+
+    lines.append(
+
+        "You are carrying:"
+
+    )
+
+
+    for item in session.player.inventory:
+
+        lines.append(
+
+            f" - {item.name}"
+
+        )
+
+
+    return "\r\n".join(
+
+        lines
+
+    )
+
+
+
+
+
 @action("talk")
 def do_talk(
 
@@ -474,7 +584,9 @@ def do_talk(
 ):
 
     room = world.get_room(
+
         session.player.room
+
     )
 
 
