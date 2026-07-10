@@ -338,17 +338,16 @@ def do_attack(
 
     if session.combat.enemy.hp <= 0:
 
-        xp = session.combat.enemy.xp_reward
+        enemy = session.combat.enemy
 
-        enemy_name = session.combat.enemy.name
+        xp = enemy.xp_reward
+
+        enemy_name = enemy.name
 
 
         session.player.gain_xp(
             xp
         )
-
-
-        session.combat = None
 
 
         output.append(
@@ -363,6 +362,25 @@ def do_attack(
             f"You gain {xp} XP."
 
         )
+
+
+        if enemy.loot:
+
+            for item in enemy.loot:
+
+                session.player.add_item(
+                    item
+                )
+
+
+                output.append(
+
+                    f"You found: {item.name}"
+
+                )
+
+
+        session.combat = None
 
 
         return "\r\n".join(output)
