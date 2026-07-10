@@ -251,6 +251,47 @@ def parse_input(text):
 
     ]):
 
+
+    if any(word in text for word in [
+
+        "flee",
+
+        "run",
+
+        "escape"
+
+    ]):
+
+        return Intent(
+
+            action="flee",
+
+            confidence=0.9
+
+        )
+
+
+    if any(word in text for word in [
+
+        "enemy",
+
+        "monster",
+
+        "inspect enemy",
+
+        "examine enemy"
+
+    ]):
+
+        return Intent(
+
+            action="enemy",
+
+            confidence=0.9
+
+        )
+
+        
         return Intent(
 
             action="attack",
