@@ -238,7 +238,7 @@ def parse_input(text):
             confidence=0.8
         )
 
-       if any(word in text for word in [
+    if any(word in text for word in [
 
         "attack",
         "hit",
