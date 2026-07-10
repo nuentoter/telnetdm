@@ -1,17 +1,12 @@
 from engine.dice import roll
 
 
-
 class Combat:
 
     def __init__(
-
         self,
-
         player,
-
         enemy
-
     ):
 
         self.player = player
@@ -25,22 +20,13 @@ class Combat:
         attack_roll = roll(20)[0]
 
 
-        strength_bonus = (
-
-            self.player.stats.modifier(
-                "strength"
-            )
-
-        )
-
-
         attack_total = (
 
             attack_roll
 
-            +
-
-            strength_bonus
+            + self.player.stats.modifier(
+                "strength"
+            )
 
         )
 
@@ -68,20 +54,21 @@ class Combat:
             damage = roll(4)[0]
 
 
-
         if critical:
 
             damage *= 2
 
 
-
         hit = attack_total >= 10
-
 
 
         if hit:
 
             self.enemy.hp -= damage
+
+        else:
+
+            damage = 0
 
 
         return {
@@ -92,7 +79,7 @@ class Combat:
 
             "attack_roll": attack_roll,
 
-            "damage": damage if hit else 0,
+            "damage": damage,
 
             "enemy_hp": max(
                 self.enemy.hp,
@@ -104,20 +91,6 @@ class Combat:
 
 
     def enemy_attack(self):
-
-        if self.enemy.hp <= 0:
-
-            return {
-
-                "hit": False,
-
-                "damage": 0,
-
-                "player_hp": self.player.hp
-
-            }
-
-
 
         attack_roll = roll(20)[0]
 
@@ -135,7 +108,6 @@ class Combat:
             self.player.hp -= damage
 
 
-
         return {
 
             "hit": hit,
@@ -145,11 +117,8 @@ class Combat:
             "damage": damage,
 
             "player_hp": max(
-
                 self.player.hp,
-
                 0
-
             )
 
         }
