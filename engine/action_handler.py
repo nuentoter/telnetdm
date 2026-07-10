@@ -23,6 +23,12 @@ def execute_action(
 
 ):
 
+    print(
+        "REGISTERED ACTIONS:",
+        list(ACTION_TABLE.keys())
+    )
+    
+    
     func = ACTION_TABLE.get(
 
         action.type
