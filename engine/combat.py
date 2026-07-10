@@ -43,7 +43,7 @@ else:
     if critical:
             damage *= 2
 
-        self.enemy.hp -= damage
+    self.enemy.hp -= damage
 
         return {
             "hit": attack_total >= 10,
