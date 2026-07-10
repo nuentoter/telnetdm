@@ -248,7 +248,18 @@ def parse_input(text):
         "stab",
         "slash",
         "punch"
+
     ]):
+
+        return Intent(
+
+            action="attack",
+
+            target=None,
+
+            confidence=0.9
+
+        )
 
 
     if any(word in text for word in [
@@ -269,6 +280,34 @@ def parse_input(text):
 
         )
 
+
+    if any(word in text for word in [
+
+        "enemy",
+        "monster",
+        "inspect enemy",
+        "examine enemy"
+
+    ]):
+
+        return Intent(
+
+            action="enemy",
+
+            confidence=0.9
+
+        )
+
+
+    return Intent(
+
+        action="unknown",
+
+        target=text,
+
+        confidence=0.2
+
+    )
 
     if any(word in text for word in [
 
