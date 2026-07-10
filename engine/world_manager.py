@@ -1,4 +1,4 @@
-from engine.world import WORLD
+from engine.world_database import WorldDatabase
 
 
 class WorldManager:
@@ -10,34 +10,9 @@ class WorldManager:
 
         self.registry = registry
 
-        self.rooms = WORLD
+        self.database = WorldDatabase()
 
-
-        self._register_world()
-
-
-
-    def _register_world(self):
-
-        for room in self.rooms.values():
-
-            self.registry.register(
-                room
-            )
-
-
-            for item in room.items:
-
-                self.registry.register(
-                    item
-                )
-
-
-            for npc in room.npcs:
-
-                self.registry.register(
-                    npc
-                )
+        self.current_world = self.database.data
 
 
 
@@ -46,7 +21,64 @@ class WorldManager:
         room_id
     ):
 
-        return self.rooms.get(
+        room = self.database.get_room(
+            room_id
+        )
+
+
+        if room is None:
+
+            return self.create_unknown_room(
+                room_id
+            )
+
+
+        return room
+
+
+
+    def create_unknown_room(
+        self,
+        room_id
+    ):
+
+        room = {
+
+            "id": room_id,
+
+            "name": "Unknown Place",
+
+            "description":
+                "An unexplored place waits beyond.",
+
+            "exits": {},
+
+            "items": [],
+
+            "npcs": []
+
+        }
+
+
+        self.database.add_room(
+
+            room_id,
+
+            room
+
+        )
+
+
+        return room
+
+
+
+    def room_exists(
+        self,
+        room_id
+    ):
+
+        return self.database.room_exists(
             room_id
         )
 
@@ -63,19 +95,22 @@ class WorldManager:
         )
 
 
-        if not room:
+        if direction not in room["exits"]:
 
             return False
 
 
-        if direction not in room.exits:
-
-            return False
+        player.room = room["exits"][direction]
 
 
-        player.room = room.exits[
-            direction
-        ]
+        if not self.room_exists(
+            player.room
+        ):
+
+            self.create_unknown_room(
+                player.room
+            )
+
 
         return True
 
@@ -92,16 +127,11 @@ class WorldManager:
         )
 
 
-        if room:
+        room["items"].append(
+            item
+        )
 
-            room.add_item(
-                item
-            )
-
-            return True
-
-
-        return False
+        self.database.save()
 
 
 
@@ -116,11 +146,11 @@ class WorldManager:
         )
 
 
-        if room:
+        if item in room["items"]:
 
-            return room.remove_item(
+            room["items"].remove(
                 item
             )
 
 
-        return False
+        self.database.save()
