@@ -178,6 +178,43 @@ def do_attack(
     )
 
 
+
+@action("enemy")
+def do_enemy(
+    session,
+    action,
+    world
+):
+
+    if session.combat is None:
+
+        return (
+            "There is no enemy."
+        )
+
+    return session.combat.enemy.describe()
+
+
+@action("flee")
+def do_flee(
+    session,
+    action,
+    world
+):
+
+    if session.combat is None:
+
+        return (
+            "You are not fighting."
+        )
+
+    session.combat = None
+
+    return (
+        "You flee from combat."
+    )
+
+
 @action("move")
 def do_move(
 
