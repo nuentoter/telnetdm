@@ -87,7 +87,16 @@ def do_attack(
 
             for loot in enemy.loot:
 
-                item = loot.item
+                item = getattr(
+                    loot,
+                    "item",
+                    None
+                )
+
+
+                if item is None:
+
+                    continue
 
 
                 session.player.add_item(
