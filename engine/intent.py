@@ -1,6 +1,7 @@
 from engine.system_actions import is_system_action
 
 
+
 class Intent:
 
     def __init__(
@@ -15,12 +16,17 @@ class Intent:
         self.confidence = confidence
 
 
+
     def to_dict(self):
 
         return {
+
             "action": self.action,
+
             "target": self.target,
+
             "confidence": self.confidence
+
         }
 
 
@@ -30,14 +36,23 @@ def clean_target(text):
     filler = [
 
         "the",
+
         "a",
+
         "an",
+
         "that",
+
         "this",
+
         "my",
+
         "to",
+
         "with",
+
         "about",
+
         "at"
 
     ]
@@ -64,9 +79,13 @@ def remove_words(text, words):
     for word in words:
 
         text = text.replace(
+
             word,
+
             ""
+
         )
+
 
     return text.strip()
 
@@ -81,9 +100,13 @@ def parse_input(text):
     if is_system_action(text):
 
         return Intent(
+
             "system",
+
             text,
+
             1.0
+
         )
 
 
@@ -91,8 +114,11 @@ def parse_input(text):
     directions = [
 
         "north",
+
         "south",
+
         "east",
+
         "west"
 
     ]
@@ -100,25 +126,34 @@ def parse_input(text):
 
     for direction in directions:
 
-        if text == direction or text.startswith(direction + " "):
+        if text == direction:
 
             return Intent(
+
                 "move",
+
                 direction,
+
                 0.95
+
             )
 
 
 
-    # EQUIP MUST COME BEFORE INVENTORY
-
     if text.startswith(
+
         (
+
             "equip ",
+
             "wear ",
+
             "wield ",
+
             "put on "
+
         )
+
     ):
 
         cleaned = remove_words(
@@ -128,9 +163,13 @@ def parse_input(text):
             [
 
                 "equip",
+
                 "wear",
+
                 "wield",
+
                 "put",
+
                 "on"
 
             ]
@@ -150,18 +189,152 @@ def parse_input(text):
 
 
 
-    if text in [
+    if text.startswith(
 
-        "inventory",
-        "inv",
-        "items",
-        "belongings",
-        "carrying",
-        "stats",
-        "status",
-        "character"
+        (
 
-    ]:
+            "unequip ",
+
+            "remove ",
+
+            "take off "
+
+        )
+
+    ):
+
+        cleaned = remove_words(
+
+            text,
+
+            [
+
+                "unequip",
+
+                "remove",
+
+                "take",
+
+                "off"
+
+            ]
+
+        )
+
+
+        return Intent(
+
+            "unequip",
+
+            clean_target(cleaned),
+
+            0.9
+
+        )
+
+
+
+    if text.startswith(
+
+        (
+
+            "attack",
+
+            "hit",
+
+            "strike",
+
+            "fight"
+
+        )
+
+    ):
+
+        cleaned = remove_words(
+
+            text,
+
+            [
+
+                "attack",
+
+                "hit",
+
+                "strike",
+
+                "fight"
+
+            ]
+
+        )
+
+
+        return Intent(
+
+            "attack",
+
+            clean_target(cleaned),
+
+            0.9
+
+        )
+
+
+
+    if text.startswith(
+
+        (
+
+            "inspect",
+
+            "examine"
+
+        )
+
+    ):
+
+        cleaned = remove_words(
+
+            text,
+
+            [
+
+                "inspect",
+
+                "examine"
+
+            ]
+
+        )
+
+
+        return Intent(
+
+            "enemy",
+
+            clean_target(cleaned),
+
+            0.85
+
+        )
+
+
+
+    if text.startswith(
+
+        (
+
+            "inventory",
+
+            "inv",
+
+            "items",
+
+            "belongings"
+
+        )
+
+    ):
 
         return Intent(
 
@@ -175,20 +348,19 @@ def parse_input(text):
 
 
 
-    if any(
+    if text.startswith(
 
-        text.startswith(word)
-
-        for word in [
+        (
 
             "look",
+
             "see",
-            "examine",
+
             "observe",
-            "inspect",
+
             "check"
 
-        ]
+        )
 
     ):
 
@@ -204,23 +376,19 @@ def parse_input(text):
 
 
 
-    if any(
+    if text.startswith(
 
-        text.startswith(word)
-
-        for word in [
+        (
 
             "take",
-            "grab",
-            "get",
-            "pick",
-            "yoink",
-            "snatch",
-            "steal",
-            "collect",
-            "pocket"
 
-        ]
+            "grab",
+
+            "get",
+
+            "pick"
+
+        )
 
     ):
 
@@ -231,15 +399,14 @@ def parse_input(text):
             [
 
                 "take",
+
                 "grab",
+
                 "get",
+
                 "pick",
-                "up",
-                "yoink",
-                "snatch",
-                "steal",
-                "collect",
-                "pocket"
+
+                "up"
 
             ]
 
@@ -253,33 +420,6 @@ def parse_input(text):
             clean_target(cleaned),
 
             0.85
-
-        )
-
-
-
-    if any(
-
-        text.startswith(word)
-
-        for word in [
-
-            "attack",
-            "hit",
-            "strike",
-            "fight"
-
-        ]
-
-    ):
-
-        return Intent(
-
-            "attack",
-
-            None,
-
-            0.9
 
         )
 
