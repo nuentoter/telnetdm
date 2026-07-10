@@ -1,4 +1,5 @@
 from engine.action_handler import action
+from engine.resolver import resolve_item
 
 
 
@@ -13,33 +14,16 @@ def do_inventory(
 
 ):
 
-    lines = []
-
-
-    lines.append(
-
-        f"Gold: {session.player.gold}"
-
-    )
-
-
     if not session.player.inventory:
 
-        lines.append(
-
-            "You are carrying nothing."
-
-        )
-
-        return "\r\n".join(lines)
+        return "You are carrying nothing."
 
 
-
-    lines.append(
+    lines = [
 
         "You are carrying:"
 
-    )
+    ]
 
 
     for item in session.player.inventory:
@@ -51,7 +35,67 @@ def do_inventory(
         )
 
 
-    return "\r\n".join(lines)
+    return "\r\n".join(
+
+        lines
+
+    )
+
+
+
+@action("take")
+def do_take(
+
+    session,
+
+    action,
+
+    world
+
+):
+
+    room = world.get_room(
+
+        session.player.room
+
+    )
+
+
+    item = resolve_item(
+
+        action.target,
+
+        room.items
+
+    )
+
+
+    if not item:
+
+        return "You don't see that here."
+
+
+    world.remove_item(
+
+        room.id,
+
+        item
+
+    )
+
+
+    session.player.add_item(
+
+        item
+
+    )
+
+
+    return (
+
+        f"You take the {item.name}."
+
+    )
 
 
 
@@ -65,9 +109,6 @@ def do_drop(
     world
 
 ):
-
-    from engine.resolver import resolve_item
-
 
     item = resolve_item(
 
@@ -99,4 +140,8 @@ def do_drop(
     )
 
 
-    return f"You drop the {item.name}."
+    return (
+
+        f"You drop the {item.name}."
+
+    )
