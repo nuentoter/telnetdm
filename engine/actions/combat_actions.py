@@ -1,5 +1,4 @@
 from engine.action_handler import action
-from engine.resolver import resolve_item
 
 
 
@@ -43,7 +42,6 @@ def do_attack(
 
         )
 
-
     else:
 
         output.append(
@@ -57,70 +55,97 @@ def do_attack(
 
         enemy = session.combat.enemy
 
-        xp = enemy.xp_reward
 
-        enemy_name = enemy.name
+        if enemy.hp <= 0:
 
+            xp = enemy.xp_reward
 
-        session.player.gain_xp(
-
-            xp
-
-        )
+            enemy_name = enemy.name
 
 
-        output.append(
+            session.player.gain_xp(
 
-            f"You defeated the {enemy_name}!"
+                xp
 
-        )
-
-
-        output.append(
-
-            f"You gain {xp} XP."
-
-        )
+            )
 
 
-        if getattr(enemy, "loot", None):
+            output.append(
 
-            for loot in enemy.loot:
+                f"You defeated the {enemy_name}!"
 
-                item = getattr(
-                    loot,
-                    "item",
-                    None
-                )
+            )
 
 
-                if item is None:
+            output.append(
 
-                    continue
+                f"You gain {xp} XP."
 
-
-                session.player.add_item(
-
-                    item
-
-                )
+            )
 
 
-                output.append(
+            if getattr(enemy, "loot", None):
 
-                    f"You found: {item.name}"
+                for loot in enemy.loot:
 
-                )
+                    item = getattr(
+
+                        loot,
+
+                        "item",
+
+                        None
+
+                    )
 
 
-        session.combat = None
+                    if item is None:
+
+                        continue
 
 
-        return "\r\n".join(
+                    session.player.add_item(
 
-            output
+                        item
 
-        )
+                    )
+
+
+                    output.append(
+
+                        f"You found: {item.name}"
+
+                    )
+
+
+            session.combat = None
+
+
+            return "\r\n".join(
+
+                output
+
+            )
+
+
+        if session.player.hp <= 0:
+
+            session.combat = None
+
+
+            output.append(
+
+                "You have been defeated."
+
+            )
+
+
+            return "\r\n".join(
+
+                output
+
+            )
+
 
 
     enemy_result = session.combat.enemy_attack()
@@ -144,11 +169,24 @@ def do_attack(
         )
 
 
-    output.append(
+    if session.player.hp <= 0:
 
-        f"HP: {session.player.hp}/{session.player.max_hp}"
+        session.combat = None
 
-    )
+
+        output.append(
+
+            "You have been defeated."
+
+        )
+
+    else:
+
+        output.append(
+
+            f"HP: {session.player.hp}/{session.player.max_hp}"
+
+        )
 
 
     return "\r\n".join(
