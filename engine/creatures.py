@@ -1,5 +1,5 @@
 from engine.objects.item import Item
-from engine.loot import LootDrop
+from engine.loot import LootDrop, generate_loot
 
 
 
@@ -19,7 +19,7 @@ class Creature:
 
         xp_reward,
 
-        loot_table=None
+        loot=None
 
     ):
 
@@ -35,7 +35,7 @@ class Creature:
 
         self.xp_reward = xp_reward
 
-        self.loot_table = loot_table or []
+        self.loot = loot or []
 
 
 
@@ -55,12 +55,9 @@ class Creature:
 
     def generate_loot(self):
 
-        from engine.loot import generate_loot
-
-
         return generate_loot(
 
-            self.loot_table
+            self.loot
 
         )
 
@@ -119,7 +116,7 @@ def create_creature(creature_id):
 
             xp_reward=50,
 
-            loot_table=[
+            loot=[
 
                 LootDrop(
 
