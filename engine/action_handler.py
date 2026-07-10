@@ -68,58 +68,113 @@ def do_look(
 
 @action("attack")
 def do_attack(
-
     session,
-
     action,
-
     world
-
 ):
 
-    if not hasattr(
-        session,
-        "combat"
-    ):
+    if session.combat is None:
 
-        return "There is nothing to attack."
+        return (
+            "There is nothing to attack."
+        )
 
 
     result = session.combat.player_attack()
 
 
-    if session.combat.finished():
+    output = []
 
-        enemy = session.combat.enemy
 
-        session.player.gain_xp(
-            enemy.xp_reward
+    if result["hit"]:
+
+        if result["critical"]:
+
+            output.append(
+                "Critical hit!"
+            )
+
+        output.append(
+
+            f"You hit the {session.combat.enemy.name} "
+
+            f"for {result['damage']} damage."
+
         )
 
+    else:
+
+        output.append(
+            "You miss."
+        )
+
+
+    if session.combat.finished():
+
+        xp = session.combat.enemy.xp_reward
+
+        session.player.gain_xp(
+            xp
+        )
+
+        enemy_name = (
+            session.combat.enemy.name
+        )
 
         session.combat = None
 
+        output.append(
+            f"You defeated the {enemy_name}!"
+        )
 
-        return (
+        output.append(
+            f"You gain {xp} XP."
+        )
 
-            f"You defeat the {enemy.name}!\r\n"
+        output.append(
+            f"Level: {session.player.level}"
+        )
 
-            f"You gain {enemy.xp_reward} XP."
+        return "\r\n".join(
+            output
+        )
+
+
+    enemy = session.combat.enemy_attack()
+
+
+    if enemy["hit"]:
+
+        output.append(
+
+            f"The {session.combat.enemy.name} "
+
+            f"hits you for {enemy['damage']} damage."
+
+        )
+
+    else:
+
+        output.append(
+
+            f"The {session.combat.enemy.name} misses."
 
         )
 
 
-    enemy_result = session.combat.enemy_attack()
+    output.append(
+
+        f"HP: "
+
+        f"{session.player.hp}/"
+
+        f"{session.player.max_hp}"
+
+    )
 
 
-    return (
-
-        f"You deal {result['damage']} damage.\r\n"
-
-        f"Enemy HP: {result['enemy_hp']}\r\n"
-
-        f"The enemy hits you for {enemy_result['damage']} damage."
-
+    return "\r\n".join(
+        output
     )
 
 
