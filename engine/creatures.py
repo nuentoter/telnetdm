@@ -1,64 +1,106 @@
-from objects.monster import Monster
+from engine.objects.item import Item
 
 
 
-CREATURES = {
+class Creature:
+
+    def __init__(
+
+        self,
+
+        creature_id,
+
+        name,
+
+        description,
+
+        hp,
+
+        xp_reward,
+
+        loot=None
+
+    ):
+
+        self.id = creature_id
+
+        self.name = name
+
+        self.description = description
+
+        self.max_hp = hp
+
+        self.hp = hp
+
+        self.xp_reward = xp_reward
+
+        self.loot = loot or []
 
 
-    "forest_wolf":
 
-        lambda:
+    def describe(self):
 
-        Monster(
+        return (
 
-            "forest_wolf",
+            f"{self.name}\r\n"
 
-            "Forest Wolf",
+            f"HP: {self.hp}/{self.max_hp}\r\n"
 
-            hp=12,
-
-            damage=3,
-
-            xp=50
-
-        ),
-
-
-
-    "goblin":
-
-        lambda:
-
-        Monster(
-
-            "goblin",
-
-            "Goblin",
-
-            hp=8,
-
-            damage=2,
-
-            xp=35
+            f"{self.description}"
 
         )
 
-}
 
 
-
-def create_creature(
-    creature_id
-):
-
-    creature = CREATURES.get(
-        creature_id
-    )
+def create_creature(creature_id):
 
 
-    if creature:
+    if creature_id == "forest_wolf":
 
-        return creature()
+
+        return Creature(
+
+            creature_id="forest_wolf",
+
+            name="Forest Wolf",
+
+            description=(
+
+                "A large gray predator "
+
+                "watching with hungry eyes."
+
+            ),
+
+            hp=12,
+
+            xp_reward=50,
+
+            loot=[
+
+                Item(
+
+                    "wolf_fang",
+
+                    "wolf fang",
+
+                    [
+
+                        "fang",
+
+                        "tooth"
+
+                    ],
+
+                    "A sharp fang taken from a forest wolf.",
+
+                    value=5
+
+                )
+
+            ]
+
+        )
 
 
     return None
