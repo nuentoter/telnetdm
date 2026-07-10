@@ -340,6 +340,94 @@ def parse_input(text):
 
         )
 
+    if any(word in text for word in [
+
+        "equip",
+        "wear",
+        "wield",
+        "put on"
+
+    ]):
+
+        cleaned = remove_words(
+
+            text,
+
+            [
+
+                "equip",
+
+                "wear",
+
+                "wield",
+
+                "put",
+
+                "on"
+
+            ]
+
+        )
+
+
+        return Intent(
+
+            action="equip",
+
+            target=clean_target(
+                cleaned
+            ),
+
+            confidence=0.9
+
+        )
+
+
+
+    if any(word in text for word in [
+
+        "remove",
+
+        "unequip",
+
+        "take off"
+
+    ]):
+
+        cleaned = remove_words(
+
+            text,
+
+            [
+
+                "remove",
+
+                "unequip",
+
+                "take",
+
+                "off"
+
+            ]
+
+        )
+
+
+        return Intent(
+
+            action="unequip",
+
+            target=clean_target(
+                cleaned
+            ),
+
+            confidence=0.9
+
+        )
+
+
+
+    
     
     return Intent(
         action="unknown",
