@@ -23,3 +23,26 @@ self.equipment = {
     "neck": None
 
 }
+
+
+def equip(
+    self,
+    item
+):
+
+    slot = item.slot
+
+    self.equipment[slot] = item
+
+
+def unequip(
+    self,
+    slot
+):
+
+    item = self.equipment[slot]
+
+    self.equipment[slot] = None
+
+    return item
+
