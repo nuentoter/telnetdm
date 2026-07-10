@@ -101,7 +101,6 @@ def parse_input(text):
 
         "inventory",
         "inv",
-        "i",
         "items",
         "belongings",
         "carrying",
