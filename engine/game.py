@@ -2,8 +2,7 @@ from engine.parser import Parser
 from engine.dispatcher import Dispatcher
 
 from engine.intent import parse_input
-from engine.actions import intent_to_action
-from engine.action_handler import execute_action
+from engine.action_definitions import intent_to_actionfrom engine.action_handler import execute_action
 
 from engine.world_manager import WorldManager
 from engine.registry import Registry
