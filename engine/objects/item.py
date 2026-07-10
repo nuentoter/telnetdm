@@ -1,61 +1,48 @@
-class Item:
+class Item(Entity):
 
     def __init__(
+
         self,
+
         item_id,
+
         name,
-        aliases=None,
-        description="",
+
+        aliases,
+
+        description,
+
+        item_type="misc",
+
+        slot=None,
+
+        damage=0,
+
+        armor=0,
+
         weight=0,
+
         value=0
+
     ):
 
-        self.id = item_id
+        super().__init__(
+            item_id,
+            name
+        )
 
-        self.name = name
-
-        self.aliases = aliases or []
+        self.aliases = aliases
 
         self.description = description
+
+        self.item_type = item_type
+
+        self.slot = slot
+
+        self.damage = damage
+
+        self.armor = armor
 
         self.weight = weight
 
         self.value = value
-
-        self.location = None
-
-
-
-    def matches(self, text):
-
-        text = text.lower()
-
-
-        if text == self.id.lower():
-
-            return True
-
-
-        if text == self.name.lower():
-
-            return True
-
-
-        for alias in self.aliases:
-
-            if text == alias.lower():
-
-                return True
-
-
-        return False
-
-
-
-    def __repr__(self):
-
-        return (
-            f"Item("
-            f"{self.id}"
-            f")"
-        )
