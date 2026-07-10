@@ -7,7 +7,7 @@ class Player:
 
         self.name = name
 
-        self.room = "start_room"
+        self.room = "forest_edge"
 
         self.level = 1
 
