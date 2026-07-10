@@ -238,13 +238,16 @@ def parse_input(text):
             confidence=0.8
         )
 
-    if any(word in text for word in [
+       if any(word in text for word in [
 
         "attack",
         "hit",
         "strike",
         "fight",
-        "kill"
+        "kill",
+        "stab",
+        "slash",
+        "punch"
 
     ]):
 
@@ -257,7 +260,6 @@ def parse_input(text):
             confidence=0.9
 
         )
-
 
     
     return Intent(
