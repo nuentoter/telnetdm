@@ -4,6 +4,52 @@ from engine.combat import Combat
 
 
 
+def describe_room(room):
+
+    lines = [
+
+        room["name"],
+
+        room["description"]
+
+    ]
+
+
+    if room.get("exits"):
+
+        lines.append(
+
+            "Exits: "
+
+            + ", ".join(
+                room["exits"].keys()
+            )
+
+        )
+
+
+    if room.get("items"):
+
+        lines.append(
+
+            "You see:"
+
+        )
+
+
+        for item in room["items"]:
+
+            lines.append(
+
+                f" - {item.name}"
+
+            )
+
+
+    return "\r\n".join(lines)
+
+
+
 @action("look")
 def do_look(
 
@@ -15,11 +61,14 @@ def do_look(
 
 ):
 
-    return world.get_room(
+    room = world.get_room(
 
         session.player.room
 
-    ).describe()
+    )
+
+
+    return describe_room(room)
 
 
 
@@ -52,12 +101,12 @@ def do_move(
     )
 
 
-    result = room.describe()
+    result = describe_room(room)
 
 
     encounter = check_encounter(
 
-        room.id
+        room["id"]
 
     )
 
