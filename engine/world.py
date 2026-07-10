@@ -20,30 +20,55 @@ WORLD = {
             "north": "forest_edge"
         },
 
-        items=[
 
-            Item(
-                item_id="rusted_key",
+items=[
 
-                name="rusted key",
+    Item(
 
-                aliases=[
-                    "key",
-                    "rusty key",
-                    "old key",
-                    "iron key"
-                ],
+        "rusted_key",
 
-                description=(
-                    "A weathered iron key coated in rust."
-                ),
+        "rusted key",
 
-                weight=0.2,
+        [
 
-                value=1
-            )
+            "key",
+
+            "rusty key"
 
         ],
+
+        "A weathered iron key coated in rust."
+
+    ),
+
+
+    Item(
+
+        "iron_sword",
+
+        "iron sword",
+
+        [
+
+            "sword",
+
+            "blade"
+
+        ],
+
+        "A simple iron sword.",
+
+        item_type="weapon",
+
+        slot="weapon",
+
+        damage=8
+
+    )
+
+],
+        
+        
 
         npcs=[
 
