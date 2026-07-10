@@ -1,4 +1,6 @@
 from engine.world_database import WorldDatabase
+from engine.world_seed import seed_world
+
 
 
 class WorldManager:
