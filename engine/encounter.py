@@ -29,7 +29,7 @@ def check_encounter(
         return None
 
 
-    if random.random() > 0.35:
+    if random.random() > 0.9:
 
         return None
 
