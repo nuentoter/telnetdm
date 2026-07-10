@@ -248,7 +248,6 @@ def parse_input(text):
         "stab",
         "slash",
         "punch"
-
     ]):
 
 
