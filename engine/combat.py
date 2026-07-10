@@ -28,32 +28,51 @@ class Combat:
         critical = (
             attack_roll == 20
         )
-weapon = player.equipment["weapon"]
 
-if weapon:
+        weapon = self.player.equipment.get(
+            "weapon"
+        )
 
-    damage = roll(
-        weapon.damage
-    )[0]
+        if weapon:
 
-else:
+            die_size = max(
+                2,
+                weapon.damage
+            )
 
-    damage = roll(4)[0]
+        else:
 
-    if critical:
+            die_size = 4
+
+        damage = roll(
+            die_size
+        )[0]
+
+        if critical:
+
             damage *= 2
 
-    self.enemy.hp -= damage
+        hit = attack_total >= 10
 
-    return {
-            "hit": attack_total >= 10,
+        if hit:
+
+            self.enemy.hp -= damage
+
+        return {
+
+            "hit": hit,
+
             "critical": critical,
+
             "attack_roll": attack_roll,
+
             "damage": damage,
+
             "enemy_hp": max(
                 self.enemy.hp,
                 0
             )
+
         }
 
 
@@ -70,7 +89,6 @@ else:
             damage = roll(4)[0]
 
             self.player.hp -= damage
-
 
         return {
 
