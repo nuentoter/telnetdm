@@ -80,17 +80,18 @@ class Game:
                 return "quit"
 
 
+
         action = intent_to_action(
             intent
         )
 
 
-print(
-    "DEBUG ACTION:",
-    action
-)
+        print(
+            "DEBUG ACTION:",
+            action
+        )
 
-        
+
         return self.dispatcher.dispatch(
 
             session,
