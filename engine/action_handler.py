@@ -304,10 +304,12 @@ def do_attack(
         return "There is nothing to attack."
 
 
+
     result = session.combat.player_attack()
 
 
     output = []
+
 
 
     if result["hit"]:
@@ -333,7 +335,8 @@ def do_attack(
         )
 
 
-    if session.combat.finished():
+
+    if session.combat.enemy.hp <= 0:
 
         xp = session.combat.enemy.xp_reward
 
@@ -349,11 +352,16 @@ def do_attack(
 
 
         output.append(
+
             f"You defeated the {enemy_name}!"
+
         )
 
+
         output.append(
+
             f"You gain {xp} XP."
+
         )
 
 
@@ -362,6 +370,7 @@ def do_attack(
 
 
     enemy = session.combat.enemy_attack()
+
 
 
     if enemy["hit"]:
@@ -382,6 +391,7 @@ def do_attack(
         )
 
 
+
     output.append(
 
         f"HP: {session.player.hp}/{session.player.max_hp}"
@@ -390,8 +400,6 @@ def do_attack(
 
 
     return "\r\n".join(output)
-
-
 
 @action("enemy")
 def do_enemy(
