@@ -18,18 +18,16 @@ class Intent:
     def to_dict(self):
 
         return {
-
             "action": self.action,
             "target": self.target,
             "confidence": self.confidence
-
         }
+
 
 
 def clean_target(text):
 
     filler = [
-
         "the",
         "a",
         "an",
@@ -39,26 +37,18 @@ def clean_target(text):
         "to",
         "with",
         "about",
-        "at",
-        "on",
-        "into",
-        "from"
-
+        "at"
     ]
 
     words = text.split()
 
     words = [
-
-        word
-
-        for word in words
-
+        word for word in words
         if word not in filler
-
     ]
 
     return " ".join(words)
+
 
 
 def remove_words(text, words):
@@ -66,14 +56,12 @@ def remove_words(text, words):
     for word in words:
 
         text = text.replace(
-
             word,
-
             ""
-
         )
 
     return text.strip()
+
 
 
 def parse_input(text):
@@ -84,382 +72,152 @@ def parse_input(text):
     if is_system_action(text):
 
         return Intent(
-
             action="system",
-
             target=text,
-
             confidence=1.0
-
         )
 
 
     directions = [
-
         "north",
         "south",
         "east",
         "west"
-
     ]
 
 
     for direction in directions:
 
-        if (
-
-            text == direction
-
-            or
-
-            text.startswith(
-
-                "go " + direction
-
-            )
-
-            or
-
-            text.startswith(
-
-                "walk " + direction
-
-            )
-
-            or
-
-            text.startswith(
-
-                "move " + direction
-
-            )
-
-        ):
+        if direction in text:
 
             return Intent(
-
                 action="move",
-
                 target=direction,
-
                 confidence=0.95
-
             )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "inventory",
+        "inv",
+        "items",
+        "belongings",
+        "carrying",
+        "stats",
+        "status",
+        "character"
 
-        for word in [
-
-            "equipment",
-
-            "gear"
-
-        ]
-
-    ):
-
-        return Intent(
-
-            action="equipment",
-
-            confidence=0.95
-
-        )
-
-
-    if any(
-
-        word in text
-
-        for word in [
-
-            "inventory",
-
-            "inv",
-
-            "items",
-
-            "carrying",
-
-            "bag",
-
-            "backpack"
-
-        ]
-
-    ):
+    ]):
 
         return Intent(
-
             action="inventory",
-
             confidence=0.95
-
         )
 
 
-    if any(
+    # IMPORTANT:
+    # unequip must come before equip
+    # because "unequip" contains "equip"
 
-        word in text
+    if any(word in text for word in [
 
-        for word in [
+        "unequip",
+        "remove",
+        "take off"
 
-            "equip",
-
-            "wear",
-
-            "wield"
-
-        ]
-
-    ):
+    ]):
 
         cleaned = remove_words(
 
             text,
 
             [
-
-                "equip",
-
-                "wear",
-
-                "wield"
-
-            ]
-
-        )
-
-        return Intent(
-
-            action="equip",
-
-            target=clean_target(
-
-                cleaned
-
-            ),
-
-            confidence=0.95
-
-        )
-
-
-    if any(
-
-        word in text
-
-        for word in [
-
-            "unequip",
-
-            "remove",
-
-            "take off"
-
-        ]
-
-    ):
-
-        cleaned = remove_words(
-
-            text,
-
-            [
-
                 "unequip",
-
                 "remove",
-
-                "take off"
-
+                "take",
+                "off"
             ]
 
         )
+
 
         return Intent(
 
             action="unequip",
 
-            target=clean_target(
+            target=clean_target(cleaned),
 
-                cleaned
-
-            ),
-
-            confidence=0.95
+            confidence=0.9
 
         )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "equip",
+        "wear",
+        "wield"
 
-        for word in [
-
-            "look",
-
-            "see",
-
-            "inspect",
-
-            "observe",
-
-            "examine"
-
-        ]
-
-    ):
-
-        return Intent(
-
-            action="look",
-
-            confidence=0.90
-
-        )
-
-
-    if any(
-
-        word in text
-
-        for word in [
-
-            "attack",
-
-            "fight",
-
-            "hit",
-
-            "strike",
-
-            "slash",
-
-            "stab",
-
-            "kill"
-
-        ]
-
-    ):
+    ]):
 
         cleaned = remove_words(
 
             text,
 
             [
-
-                "attack",
-
-                "fight",
-
-                "hit",
-
-                "strike",
-
-                "slash",
-
-                "stab",
-
-                "kill"
-
+                "equip",
+                "wear",
+                "wield"
             ]
 
         )
 
+
         return Intent(
 
-            action="attack",
+            action="equip",
 
-            target=clean_target(
+            target=clean_target(cleaned),
 
-                cleaned
-
-            ),
-
-            confidence=0.95
+            confidence=0.9
 
         )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "look",
+        "see",
+        "examine",
+        "observe",
+        "inspect",
+        "check"
 
-        for word in [
-
-            "enemy",
-
-            "inspect enemy",
-
-            "inspect wolf",
-
-            "examine wolf"
-
-        ]
-
-    ):
+    ]):
 
         return Intent(
 
-            action="enemy",
+            action="look",
 
-            confidence=0.90
+            confidence=0.9
 
         )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "take",
+        "grab",
+        "get",
+        "pick",
+        "yoink",
+        "snatch",
+        "steal",
+        "collect",
+        "pocket"
 
-        for word in [
-
-            "flee",
-
-            "run",
-
-            "escape"
-
-        ]
-
-    ):
-
-        return Intent(
-
-            action="flee",
-
-            confidence=0.90
-
-        )
-
-
-    if any(
-
-        word in text
-
-        for word in [
-
-            "take",
-
-            "grab",
-
-            "pick",
-
-            "get",
-
-            "collect",
-
-            "loot"
-
-        ]
-
-    ):
+    ]):
 
         cleaned = remove_words(
 
@@ -468,53 +226,39 @@ def parse_input(text):
             [
 
                 "take",
-
                 "grab",
-
-                "pick",
-
-                "up",
-
                 "get",
-
+                "pick",
+                "up",
+                "yoink",
+                "snatch",
+                "steal",
                 "collect",
-
-                "loot"
+                "pocket"
 
             ]
 
         )
 
+
         return Intent(
 
             action="take",
 
-            target=clean_target(
+            target=clean_target(cleaned),
 
-                cleaned
-
-            ),
-
-            confidence=0.90
+            confidence=0.85
 
         )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "drop",
+        "leave",
+        "discard"
 
-        for word in [
-
-            "drop",
-
-            "discard",
-
-            "leave"
-
-        ]
-
-    ):
+    ]):
 
         cleaned = remove_words(
 
@@ -523,49 +267,95 @@ def parse_input(text):
             [
 
                 "drop",
-
-                "discard",
-
-                "leave"
+                "leave",
+                "discard"
 
             ]
 
         )
 
+
         return Intent(
 
             action="drop",
 
-            target=clean_target(
+            target=clean_target(cleaned),
 
-                cleaned
-
-            ),
-
-            confidence=0.90
+            confidence=0.85
 
         )
 
 
-    if any(
+    if any(word in text for word in [
 
-        word in text
+        "attack",
+        "hit",
+        "strike",
+        "fight",
+        "kill",
+        "stab",
+        "slash",
+        "punch"
 
-        for word in [
+    ]):
 
-            "talk",
+        return Intent(
 
-            "speak",
+            action="attack",
 
-            "ask",
+            target=None,
 
-            "hello",
+            confidence=0.9
 
-            "greet"
+        )
 
-        ]
 
-    ):
+    if any(word in text for word in [
+
+        "flee",
+        "run",
+        "escape"
+
+    ]):
+
+        return Intent(
+
+            action="flee",
+
+            confidence=0.9
+
+        )
+
+
+    if any(word in text for word in [
+
+        "enemy",
+        "monster",
+        "inspect enemy",
+        "examine enemy"
+
+    ]):
+
+        return Intent(
+
+            action="enemy",
+
+            confidence=0.9
+
+        )
+
+
+    if any(word in text for word in [
+
+        "talk",
+        "speak",
+        "ask",
+        "greet",
+        "hello",
+        "chat",
+        "conversation"
+
+    ]):
 
         cleaned = remove_words(
 
@@ -574,32 +364,26 @@ def parse_input(text):
             [
 
                 "talk",
-
                 "speak",
-
                 "ask",
-
-                "hello",
-
                 "greet",
-
+                "hello",
+                "chat",
+                "conversation",
                 "say"
 
             ]
 
         )
 
+
         return Intent(
 
             action="talk",
 
-            target=clean_target(
+            target=clean_target(cleaned),
 
-                cleaned
-
-            ),
-
-            confidence=0.85
+            confidence=0.8
 
         )
 
@@ -610,6 +394,6 @@ def parse_input(text):
 
         target=text,
 
-        confidence=0.20
+        confidence=0.2
 
     )
