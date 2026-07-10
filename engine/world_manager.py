@@ -14,6 +14,8 @@ class WorldManager:
 
         self.database = WorldDatabase()
 
+        seed_world()
+
         self.current_world = self.database.data
 
 
