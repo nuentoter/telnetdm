@@ -63,6 +63,22 @@ class Creature:
 
 
 
+    def get_loot_items(self):
+
+        result = self.generate_loot()
+
+        return result["items"]
+
+
+
+    def get_gold_drop(self):
+
+        result = self.generate_loot()
+
+        return result["gold"]
+
+
+
 
 
 def create_creature(creature_id):
