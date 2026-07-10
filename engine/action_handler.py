@@ -2,10 +2,91 @@ from engine.resolver import resolve_item
 from engine.npc_resolver import resolve_npc
 from engine.encounter import check_encounter
 from engine.combat import Combat
+from engine.resolver import resolve_item
+
 
 
 
 ACTION_TABLE = {}
+
+def equip_item(
+
+    session,
+
+    target
+
+):
+
+    item = resolve_item(
+
+        target,
+
+        session.player.inventory
+
+    )
+
+
+    if not item:
+
+        return (
+
+            "You do not have that item."
+
+        )
+
+
+    if not item.slot:
+
+        return (
+
+            "You cannot equip that."
+
+        )
+
+
+    session.player.equip(
+        item
+    )
+
+
+    return (
+
+        f"You equip the {item.name}."
+
+    )
+
+
+
+def unequip_item(
+
+    session,
+
+    target
+
+):
+
+    for slot, item in session.player.equipment.items():
+
+        if item and item.matches(target):
+
+            session.player.unequip(
+                slot
+            )
+
+
+            return (
+
+                f"You remove the {item.name}."
+
+            )
+
+
+    return (
+
+        "You are not wearing that."
+
+    )
+
 
 
 def action(name):
@@ -52,6 +133,27 @@ def execute_action(
 
 @action("unequip")
 
+
+if action.type == "equip":
+
+    return equip_item(
+
+        session,
+
+        action.target
+
+    )
+
+
+if action.type == "unequip":
+
+    return unequip_item(
+
+        session,
+
+        action.target
+
+    )
 
 
 @action("look")
