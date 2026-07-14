@@ -1,3 +1,6 @@
+from engine.quest_generator import QuestGenerator
+
+
 class NPC:
 
     def __init__(
@@ -16,46 +19,39 @@ class NPC:
             "The NPC has nothing to say."
         ]
         self.quests = quests or []
+        self.quest_generator = QuestGenerator()
 
 
     def talk(self):
 
-        if self.quests:
+        if not self.quests:
+            quest = self.quest_generator.generate(
+                self,
+                self.name
+            )
+            self.quests.append(quest)
 
-            quest = self.quests[0]
+        quest = self.quests[0]
 
-            if hasattr(quest, "description"):
-
-                return (
-                    f"{self.name}:\r\n"
-                    f"\"{quest.description}\"\r\n"
-                    f"Quest offered: {quest.name}"
-                )
-
+        if hasattr(quest, "description"):
             return (
                 f"{self.name}:\r\n"
-                f"\"{quest['description']}\"\r\n"
-                f"Quest offered: {quest['name']}"
+                f"\"{quest.description}\"\r\n"
+                f"Quest offered: {quest.name}"
             )
 
         return (
             f"{self.name}:\r\n"
-            f"\"{self.dialogue[0]}\""
+            f"\"{quest['description']}\"\r\n"
+            f"Quest offered: {quest['name']}"
         )
 
 
-    def add_quest(
-        self,
-        quest
-    ):
-
-        self.quests.append(
-            quest
-        )
+    def add_quest(self, quest):
+        self.quests.append(quest)
 
 
     def describe(self):
-
         return {
             "id": self.id,
             "name": self.name,
