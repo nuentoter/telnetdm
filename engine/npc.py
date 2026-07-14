@@ -12,11 +12,9 @@ class NPC:
         self.id = npc_id
         self.name = name
         self.personality = personality
-
         self.dialogue = dialogue or [
             "The NPC has nothing to say."
         ]
-
         self.quests = quests or []
 
 
@@ -25,6 +23,14 @@ class NPC:
         if self.quests:
 
             quest = self.quests[0]
+
+            if hasattr(quest, "description"):
+
+                return (
+                    f"{self.name}:\r\n"
+                    f"\"{quest.description}\"\r\n"
+                    f"Quest offered: {quest.name}"
+                )
 
             return (
                 f"{self.name}:\r\n"
@@ -54,5 +60,8 @@ class NPC:
             "id": self.id,
             "name": self.name,
             "personality": self.personality,
-            "quests": self.quests
+            "quests": [
+                q.describe() if hasattr(q, "describe") else q
+                for q in self.quests
+            ]
         }
