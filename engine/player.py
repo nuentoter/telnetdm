@@ -12,6 +12,7 @@ class Player:
         self.stats = Stats()
         self.inventory = []
         self.quests = []
+        self.completed_quests = []
         self.equipment = {
             "weapon": None,
             "armor": None
@@ -20,14 +21,28 @@ class Player:
     def add_quest(self, quest):
         self.quests.append(quest)
 
-    def describe_quests(self):
-        if not self.quests:
-            return "You have no active quests."
+    def complete_quest(self, quest):
+        if quest in self.quests:
+            self.quests.remove(quest)
+        self.completed_quests.append(quest)
 
-        lines = ["Active Quests:"]
-        for quest in self.quests:
-            name = quest.get("name", "Unknown Quest") if isinstance(quest, dict) else quest.name
-            lines.append(f"- {name}")
+    def describe_quests(self):
+        lines = []
+
+        if self.quests:
+            lines.append("Active Quests:")
+            for quest in self.quests:
+                name = quest.get("name", "Unknown Quest") if isinstance(quest, dict) else quest.name
+                lines.append(f"- {name}")
+        else:
+            lines.append("Active Quests: none")
+
+        if self.completed_quests:
+            lines.append("\r\nCompleted Quests:")
+            for quest in self.completed_quests:
+                name = quest.get("name", "Unknown Quest") if isinstance(quest, dict) else quest.name
+                lines.append(f"- {name}")
+
         return "\r\n".join(lines)
 
     def add_item(self, item):
