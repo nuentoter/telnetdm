@@ -1,3 +1,6 @@
+import random
+import uuid
+
 from engine.world_database import WorldDatabase
 from engine.world_seed import seed_world
 
@@ -28,8 +31,8 @@ class WorldManager:
 
         room = {
             "id": room_id,
-            "name": "Unknown Place",
-            "description": "An unexplored place waits beyond.",
+            "name": "Unexplored Territory",
+            "description": "A place no map has recorded yet.",
             "exits": {},
             "items": [],
             "npcs": []
@@ -41,6 +44,56 @@ class WorldManager:
         )
 
         return room
+
+
+    def generate_room(self, from_room, direction):
+
+        room_id = "room_" + str(uuid.uuid4())[:8]
+
+        names = [
+            "Forgotten Grove",
+            "Ancient Crossing",
+            "Misty Hollow",
+            "Silent Ruins",
+            "Hidden Valley"
+        ]
+
+        descriptions = [
+            "The land beyond is untouched by civilization.",
+            "Old stones and strange markings cover the ground.",
+            "The wilderness stretches farther than expected."
+        ]
+
+        reverse = {
+            "north": "south",
+            "south": "north",
+            "east": "west",
+            "west": "east"
+        }
+
+        room = {
+            "id": room_id,
+            "name": random.choice(names),
+            "description": random.choice(descriptions),
+            "exits": {
+                reverse[direction]: from_room
+            },
+            "items": [],
+            "npcs": []
+        }
+
+        self.database.add_room(
+            room_id,
+            room
+        )
+
+        origin = self.get_room(from_room)
+
+        origin["exits"][direction] = room_id
+
+        self.database.save()
+
+        return room_id
 
 
     def room_exists(self, room_id):
@@ -55,14 +108,13 @@ class WorldManager:
         )
 
         if direction not in room["exits"]:
-            return False
+
+            self.generate_room(
+                player.room,
+                direction
+            )
 
         player.room = room["exits"][direction]
-
-        if not self.room_exists(player.room):
-            self.create_unknown_room(
-                player.room
-            )
 
         return True
 
@@ -70,7 +122,9 @@ class WorldManager:
     def add_item(self, room_id, item):
 
         room = self.get_room(room_id)
+
         room["items"].append(item)
+
         self.database.save()
 
 
