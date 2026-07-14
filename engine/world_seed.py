@@ -8,61 +8,58 @@ def seed_world(db=None):
 
 
     if db.room_exists("forest_edge"):
-
         return
 
 
     db.add_room(
-
         "forest_edge",
-
         {
-
             "id": "forest_edge",
-
             "name": "Forest Edge",
-
             "description":
                 "Dark pine trees press close together. The forest feels alive and watching.",
-
             "exits": {
-
                 "south": "ruined_outpost"
-
             },
-
             "items": [],
-
-            "npcs": []
-
+            "npcs": [
+                {
+                    "id": "old_hunter",
+                    "name": "Old Hunter",
+                    "personality": "gruff",
+                    "dialogue": [
+                        "The wolves have returned to the forest."
+                    ],
+                    "quests": [
+                        {
+                            "name": "Wolf Trouble",
+                            "description": "Defeat a Forest Wolf and bring peace back to the trail.",
+                            "objective": "defeat",
+                            "target": "Forest Wolf",
+                            "amount": 1,
+                            "reward": {
+                                "xp": 50,
+                                "gold": 25
+                            }
+                        }
+                    ]
+                }
+            ]
         }
-
     )
 
 
     db.add_room(
-
         "ruined_outpost",
-
         {
-
             "id": "ruined_outpost",
-
             "name": "Ruined Outpost",
-
             "description":
                 "Stone walls crumble under moss and time. A cold wind moves through broken watchtowers.",
-
             "exits": {
-
                 "north": "forest_edge"
-
             },
-
             "items": [],
-
             "npcs": []
-
         }
-
     )
