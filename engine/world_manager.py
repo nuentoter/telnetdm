@@ -9,17 +9,13 @@ from engine.npc_factory import create_npcs
 class WorldManager:
 
     def __init__(self, registry):
-
         self.registry = registry
         self.database = WorldDatabase()
-
         seed_world(self.database)
-
         self.current_world = self.database.data
 
 
     def get_room(self, room_id):
-
         room = self.database.get_room(room_id)
 
         if room is None:
@@ -35,7 +31,6 @@ class WorldManager:
 
 
     def create_unknown_room(self, room_id):
-
         room = {
             "id": room_id,
             "name": "Unexplored Territory",
@@ -46,12 +41,35 @@ class WorldManager:
         }
 
         self.database.add_room(room_id, room)
-
         return room
 
 
-    def generate_room(self, from_room, direction):
+    def generate_npc(self):
+        names = [
+            "Alden the Wanderer",
+            "Mira the Herbalist",
+            "Garrik the Hunter",
+            "Elara the Scout",
+            "Borin the Old Miner"
+        ]
 
+        personalities = [
+            "friendly",
+            "secretive",
+            "cautious",
+            "gruff"
+        ]
+
+        return {
+            "id": "npc_" + str(uuid.uuid4())[:8],
+            "name": random.choice(names),
+            "personality": random.choice(personalities),
+            "dialogue": [],
+            "quests": []
+        }
+
+
+    def generate_room(self, from_room, direction):
         room_id = "room_" + str(uuid.uuid4())[:8]
 
         names = [
@@ -75,13 +93,18 @@ class WorldManager:
             "west": "east"
         }
 
+        npcs = []
+
+        if random.random() < 0.5:
+            npcs.append(self.generate_npc())
+
         room = {
             "id": room_id,
             "name": random.choice(names),
             "description": random.choice(descriptions),
             "exits": {reverse[direction]: from_room},
             "items": [],
-            "npcs": []
+            "npcs": npcs
         }
 
         self.database.add_room(room_id, room)
@@ -99,14 +122,12 @@ class WorldManager:
 
 
     def move_player(self, player, direction):
-
         room = self.get_room(player.room)
 
         if direction not in room["exits"]:
             self.generate_room(player.room, direction)
 
         player.room = room["exits"][direction]
-
         return True
 
 
@@ -118,6 +139,8 @@ class WorldManager:
 
     def remove_item(self, room_id, item):
         room = self.get_room(room_id)
+
         if item in room["items"]:
             room["items"].remove(item)
+
         self.database.save()
