@@ -3,6 +3,7 @@ import uuid
 
 from engine.world_database import WorldDatabase
 from engine.world_seed import seed_world
+from engine.npc_factory import create_npcs
 
 
 class WorldManager:
@@ -23,6 +24,9 @@ class WorldManager:
 
         if room is None:
             return self.create_unknown_room(room_id)
+
+        if isinstance(room.get("npcs"), list):
+            room["npcs"] = create_npcs(room["npcs"])
 
         return room
 
@@ -88,7 +92,6 @@ class WorldManager:
         )
 
         origin = self.get_room(from_room)
-
         origin["exits"][direction] = room_id
 
         self.database.save()
@@ -103,12 +106,9 @@ class WorldManager:
 
     def move_player(self, player, direction):
 
-        room = self.get_room(
-            player.room
-        )
+        room = self.get_room(player.room)
 
         if direction not in room["exits"]:
-
             self.generate_room(
                 player.room,
                 direction
@@ -122,9 +122,7 @@ class WorldManager:
     def add_item(self, room_id, item):
 
         room = self.get_room(room_id)
-
         room["items"].append(item)
-
         self.database.save()
 
 
