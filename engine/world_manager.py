@@ -26,7 +26,10 @@ class WorldManager:
             return self.create_unknown_room(room_id)
 
         if isinstance(room.get("npcs"), list):
-            room["npcs"] = create_npcs(room["npcs"])
+            room["npcs"] = create_npcs(
+                room["npcs"],
+                self.database
+            )
 
         return room
 
@@ -42,10 +45,7 @@ class WorldManager:
             "npcs": []
         }
 
-        self.database.add_room(
-            room_id,
-            room
-        )
+        self.database.add_room(room_id, room)
 
         return room
 
@@ -79,17 +79,12 @@ class WorldManager:
             "id": room_id,
             "name": random.choice(names),
             "description": random.choice(descriptions),
-            "exits": {
-                reverse[direction]: from_room
-            },
+            "exits": {reverse[direction]: from_room},
             "items": [],
             "npcs": []
         }
 
-        self.database.add_room(
-            room_id,
-            room
-        )
+        self.database.add_room(room_id, room)
 
         origin = self.get_room(from_room)
         origin["exits"][direction] = room_id
@@ -100,7 +95,6 @@ class WorldManager:
 
 
     def room_exists(self, room_id):
-
         return self.database.room_exists(room_id)
 
 
@@ -109,10 +103,7 @@ class WorldManager:
         room = self.get_room(player.room)
 
         if direction not in room["exits"]:
-            self.generate_room(
-                player.room,
-                direction
-            )
+            self.generate_room(player.room, direction)
 
         player.room = room["exits"][direction]
 
@@ -120,17 +111,13 @@ class WorldManager:
 
 
     def add_item(self, room_id, item):
-
         room = self.get_room(room_id)
         room["items"].append(item)
         self.database.save()
 
 
     def remove_item(self, room_id, item):
-
         room = self.get_room(room_id)
-
         if item in room["items"]:
             room["items"].remove(item)
-
         self.database.save()
