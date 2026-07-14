@@ -1,9 +1,10 @@
 from engine.world_database import WorldDatabase
 
 
-def seed_world():
+def seed_world(db=None):
 
-    db = WorldDatabase()
+    if db is None:
+        db = WorldDatabase()
 
 
     if db.room_exists("forest_edge"):
