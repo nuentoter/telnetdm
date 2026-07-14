@@ -17,7 +17,7 @@ def create_quest(data):
     )
 
 
-def create_npc(data):
+def create_npc(data, database=None):
 
     if isinstance(data, NPC):
         return data
@@ -32,13 +32,14 @@ def create_npc(data):
         name=data.get("name", "Unknown"),
         personality=data.get("personality", "neutral"),
         dialogue=data.get("dialogue", []),
-        quests=quests
+        quests=quests,
+        database=database
     )
 
 
-def create_npcs(data):
+def create_npcs(data, database=None):
 
     return [
-        create_npc(npc)
+        create_npc(npc, database)
         for npc in data or []
     ]
