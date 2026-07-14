@@ -10,37 +10,26 @@ class WorldDatabase:
     def __init__(self):
 
         self.data = {
-
             "rooms": {},
-
             "npcs": {},
-
             "quests": {},
-
             "events": {}
-
         }
 
         self.load()
 
 
-
     def load(self):
 
         if not os.path.exists(WORLD_FILE):
-
             self.save()
-
             return
-
 
         with open(
             WORLD_FILE,
             "r"
         ) as file:
-
             self.data = json.load(file)
-
 
 
     def save(self):
@@ -49,13 +38,40 @@ class WorldDatabase:
             WORLD_FILE,
             "w"
         ) as file:
-
             json.dump(
-                self.data,
+                self.serialize(self.data),
                 file,
                 indent=4
             )
 
+
+    def serialize(self, value):
+
+        if isinstance(value, dict):
+
+            return {
+                key: self.serialize(item)
+                for key, item in value.items()
+            }
+
+
+        if isinstance(value, list):
+
+            return [
+                self.serialize(item)
+                for item in value
+            ]
+
+
+        if hasattr(value, "__dict__"):
+
+            return {
+                key: self.serialize(item)
+                for key, item in value.__dict__.items()
+            }
+
+
+        return value
 
 
     def room_exists(
@@ -64,7 +80,6 @@ class WorldDatabase:
     ):
 
         return room_id in self.data["rooms"]
-
 
 
     def get_room(
@@ -77,7 +92,6 @@ class WorldDatabase:
         )
 
 
-
     def add_room(
         self,
         room_id,
@@ -85,9 +99,7 @@ class WorldDatabase:
     ):
 
         self.data["rooms"][room_id] = room_data
-
         self.save()
-
 
 
     def add_npc(
@@ -97,9 +109,7 @@ class WorldDatabase:
     ):
 
         self.data["npcs"][npc_id] = npc_data
-
         self.save()
-
 
 
     def add_quest(
@@ -109,5 +119,4 @@ class WorldDatabase:
     ):
 
         self.data["quests"][quest_id] = quest_data
-
         self.save()
